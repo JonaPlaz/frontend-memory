@@ -33,6 +33,53 @@ export const CONTRACT_ABI = [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "betAmount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "startTime",
+        type: "uint256",
+      },
+    ],
+    name: "GameCreated",
+    type: "event",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -44,41 +91,236 @@ export const CONTRACT_ABI = [
       {
         indexed: false,
         internalType: "address",
-        name: "player1",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "player2",
+        name: "winner",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "betAmount",
+        name: "winnerReward",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "platformFee",
         type: "uint256",
       },
     ],
-    name: "GameCreated",
+    name: "GameEnded",
     type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "player",
+        type: "address",
+      },
+    ],
+    name: "PlayerJoined",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "pseudo",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "initialBalance",
+        type: "uint256",
+      },
+    ],
+    name: "UserRegistered",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "chessTokenAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [
       {
-        internalType: "address",
-        name: "player2",
-        type: "address",
+        internalType: "uint256",
+        name: "betAmount",
+        type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "betAmount",
+        name: "startTime",
         type: "uint256",
       },
     ],
     name: "createGame",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "depositTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+      {
+        internalType: "uint8",
+        name: "outcome",
+        type: "uint8",
+      },
+    ],
+    name: "endGame",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "gameDetails",
+    outputs: [
+      {
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "userAddress",
+            type: "address",
+          },
+          {
+            internalType: "string",
+            name: "pseudo",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ChessFactory.User",
+        name: "player1",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "userAddress",
+            type: "address",
+          },
+          {
+            internalType: "string",
+            name: "pseudo",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ChessFactory.User",
+        name: "player2",
+        type: "tuple",
+      },
+      {
+        internalType: "uint256",
+        name: "betAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "player1Joined",
+        type: "bool",
+      },
+      {
+        internalType: "bool",
+        name: "player2Joined",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "startTime",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -102,12 +344,122 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
-    name: "getGames",
+    name: "getAllGameDetails",
     outputs: [
       {
-        internalType: "address[]",
+        components: [
+          {
+            internalType: "address",
+            name: "gameAddress",
+            type: "address",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "userAddress",
+                type: "address",
+              },
+              {
+                internalType: "string",
+                name: "pseudo",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "balance",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ChessFactory.User",
+            name: "player1",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "userAddress",
+                type: "address",
+              },
+              {
+                internalType: "string",
+                name: "pseudo",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "balance",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ChessFactory.User",
+            name: "player2",
+            type: "tuple",
+          },
+          {
+            internalType: "uint256",
+            name: "betAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "player1Joined",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "player2Joined",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ChessFactory.Game[]",
         name: "",
-        type: "address[]",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+    ],
+    name: "joinGame",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "platformBalance",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -133,6 +485,39 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "string",
+        name: "pseudo",
+        type: "string",
+      },
+    ],
+    name: "registerUser",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_chessToken",
+        type: "address",
+      },
+    ],
+    name: "setChessToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "templateAddress",
     outputs: [
@@ -140,6 +525,48 @@ export const CONTRACT_ABI = [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "users",
+    outputs: [
+      {
+        internalType: "address",
+        name: "userAddress",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "pseudo",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "balance",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
