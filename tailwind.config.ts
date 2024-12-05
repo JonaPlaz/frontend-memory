@@ -9,12 +9,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: '#38B6FF',
+        'primary-content': '#FFFFFF',
       },
     },
   },
   plugins: [
     require('daisyui'),
   ],
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: '#38B6FF',
+          'primary-content': '#FFFFFF',
+        },
+      },
+    ],
+  },
 } satisfies Config;

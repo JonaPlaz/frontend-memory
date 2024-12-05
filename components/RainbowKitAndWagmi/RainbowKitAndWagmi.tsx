@@ -1,8 +1,11 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
+import merge from 'lodash.merge';
 import {
     getDefaultConfig,
     RainbowKitProvider,
+    darkTheme,
+    Theme,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -28,6 +31,12 @@ const customLocalhost = {
     testnet: true,
 };
 
+  const myCustomTheme = merge(darkTheme(), {
+    colors: {
+      accentColor: '#38B6FF',
+    },
+  } as Theme);
+
 const config = getDefaultConfig({
     appName: 'My RainbowKit App',
     projectId: 'd9e9f4694f87803a5a2e1769aaeab1b2',
@@ -41,7 +50,7 @@ const CustomRainbowKitProvider = ({ children }) => {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider>
+                <RainbowKitProvider theme={myCustomTheme}>
                     {children}
                 </RainbowKitProvider>
             </QueryClientProvider>

@@ -2,9 +2,9 @@ import Header from "./Header";
 
 const Layout = ({ children }) => {
   return (
-    <div className="app">
+    <div>
       <Header />
-      <main className="main">{children}</main>
+      <main className="mx-8">{children}</main>
     </div>
   );
 };
