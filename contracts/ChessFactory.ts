@@ -116,6 +116,43 @@ export const CONTRACT_ABI = [
       {
         indexed: true,
         internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "player1",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "player2",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "betAmount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "startTime",
+        type: "uint256",
+      },
+    ],
+    name: "GameStarted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "previousOwner",
         type: "address",
       },
@@ -139,13 +176,13 @@ export const CONTRACT_ABI = [
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player",
         type: "address",
       },
     ],
-    name: "PlayerJoined",
+    name: "PlayerRegistered",
     type: "event",
   },
   {
@@ -306,12 +343,7 @@ export const CONTRACT_ABI = [
       },
       {
         internalType: "bool",
-        name: "player1Joined",
-        type: "bool",
-      },
-      {
-        internalType: "bool",
-        name: "player2Joined",
+        name: "playerStarted",
         type: "bool",
       },
       {
@@ -404,12 +436,7 @@ export const CONTRACT_ABI = [
           },
           {
             internalType: "bool",
-            name: "player1Joined",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "player2Joined",
+            name: "playerStarted",
             type: "bool",
           },
           {
@@ -454,19 +481,6 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "gameAddress",
-        type: "address",
-      },
-    ],
-    name: "joinGame",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -517,6 +531,19 @@ export const CONTRACT_ABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+    ],
+    name: "registerToGame",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "string",
         name: "pseudo",
         type: "string",
@@ -543,6 +570,19 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "setChessToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "gameAddress",
+        type: "address",
+      },
+    ],
+    name: "startGame",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

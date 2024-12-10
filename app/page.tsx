@@ -70,6 +70,7 @@ export default function Home() {
         <div className="my-4">
           <ConnectButton />
         </div>
+        <GameList />
       </>
     );
   }
@@ -92,7 +93,6 @@ export default function Home() {
             )}
           </div>
         </div>
-        <GameList />
       </div>
       {showPopIn && (
         <RegisterPopIn
@@ -102,6 +102,7 @@ export default function Home() {
           onCancel={() => setShowPopIn(false)}
         />
       )}
+      <GameList />
     </>
   );
 }

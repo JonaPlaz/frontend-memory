@@ -1,26 +1,40 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useReadContract, useWatchContractEvent } from "wagmi";
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/contracts/ChessFactory";
+import { useReadContract, useWatchContractEvent, useAccount } from "wagmi";
+import { useChessFactory } from "@/hooks/useContract";
+import { CONTRACT_ABI as ChessFactoryABI, CONTRACT_ADDRESS as ChessFactoryAddress } from "@/contracts/ChessFactory";
 
 export default function Game() {
   const [games, setGames] = useState<any[]>([]);
+  const { writeChessFactory } = useChessFactory();
+  const { address } = useAccount();
 
   // Lire toutes les parties existantes
   const { data: allGames, refetch } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
+    address: ChessFactoryAddress,
+    abi: ChessFactoryABI,
     functionName: "getAllGameDetails",
   });
 
   // Mettre à jour l'état lorsqu'une nouvelle partie est créée
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
+    address: ChessFactoryAddress,
+    abi: ChessFactoryABI,
     eventName: "GameCreated",
     onLogs: () => refetch(),
   });
+
+  // Fonction pour s'inscrire à une partie
+  const handleRegister = async (gameAddress: string) => {
+    try {
+      writeChessFactory("registerToGame", [gameAddress]);
+      refetch(); // Rafraîchir les données
+    } catch (error) {
+      console.error("Erreur lors de l'inscription :", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
+  };
 
   // Mettre à jour l'état local avec les détails des parties
   useEffect(() => {
@@ -54,12 +68,23 @@ export default function Game() {
               <div>
                 <p>Récompense</p>
                 <div className="flex flex-row">
-                  <p className="mr-2">{(Number(game.betAmount) * 2 - (Number(game.betAmount) * 2) / 20) / 1e18} CHESS</p>
+                  <p className="mr-2">
+                    {(Number(game.betAmount) * 2 - (Number(game.betAmount) * 2) / 20) / 1e18} CHESS
+                  </p>
                   <Image src="/images/game/award.png" alt="award icon" width={24} height={24} />
                 </div>
               </div>
             </div>
-            <button className="btn btn-primary btn-wide mt-6">Voir</button>
+            <div>
+              
+            </div>
+            <button
+              className="btn btn-primary btn-wide mt-6"
+              onClick={() => handleRegister(game.gameAddress)}
+              disabled={!address} // Désactiver si aucun compte connecté
+            >
+              S'inscrire
+            </button>
           </div>
         </div>
       ))}
