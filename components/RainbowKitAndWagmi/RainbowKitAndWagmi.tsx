@@ -4,7 +4,7 @@ import merge from 'lodash.merge';
 import {
     getDefaultConfig,
     RainbowKitProvider,
-    darkTheme,
+    lightTheme,
     Theme,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
@@ -31,7 +31,7 @@ const customLocalhost = {
     testnet: true,
 };
 
-  const myCustomTheme = merge(darkTheme(), {
+  const myCustomTheme = merge(lightTheme(), {
     colors: {
       accentColor: '#38B6FF',
     },

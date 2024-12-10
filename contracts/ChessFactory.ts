@@ -427,6 +427,36 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getAllUsers",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "userAddress",
+            type: "address",
+          },
+          {
+            internalType: "string",
+            name: "pseudo",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ChessFactory.User[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -541,6 +571,25 @@ export const CONTRACT_ABI = [
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "userAddresses",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
