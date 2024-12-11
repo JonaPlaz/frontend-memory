@@ -23,6 +23,7 @@ export default {
         mytheme: {
           primary: '#38B6FF',
           'primary-content': '#FFFFFF',
+          'error-content': '#FFFFFF',
         },
       },
     ],
