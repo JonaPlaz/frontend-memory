@@ -44,6 +44,16 @@ export default function Game() {
     }
   }, [allGames]);
 
+  const handlePlay = (gameAddress: string) => {
+    try {
+      // Redirection vers la page de jeu avec l'ID de la partie
+      window.location.href = `/game/${gameAddress}`;
+    } catch (error) {
+      console.error("Erreur lors de l'accès au jeu :", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
+  };
+
   return (
     <div className="games-list">
       {games.map((game, index) => (
@@ -75,15 +85,17 @@ export default function Game() {
                 </div>
               </div>
             </div>
-            <div>
-              
-            </div>
+            <div></div>
             <button
               className="btn btn-primary btn-wide mt-6"
-              onClick={() => handleRegister(game.gameAddress)}
+              onClick={() =>
+                game.player1.userAddress === address || game.player2.userAddress === address
+                  ? handlePlay(game.gameAddress)
+                  : handleRegister(game.gameAddress)
+              }
               disabled={!address} // Désactiver si aucun compte connecté
             >
-              S'inscrire
+              {game.player1.userAddress === address || game.player2.userAddress === address ? "Jouer" : "S'inscrire"}
             </button>
           </div>
         </div>
