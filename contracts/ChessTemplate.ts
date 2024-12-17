@@ -1,5 +1,40 @@
-export const CONTRACT_ADDRESS = '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512';
+export const CONTRACT_ADDRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 export const CONTRACT_ABI = [
+  {
+    inputs: [],
+    name: "AlreadyInitialized",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "GameHasEnded",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "GameNotActive",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidPlayerAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotParticipant",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotYourTurn",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "PlayerAlreadyAssigned",
+    type: "error",
+  },
   {
     anonymous: false,
     inputs: [
@@ -10,7 +45,7 @@ export const CONTRACT_ABI = [
         type: "uint8",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "winner",
         type: "address",
@@ -23,13 +58,13 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player1",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player2",
         type: "address",
@@ -48,7 +83,7 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player",
         type: "address",
@@ -495,6 +530,54 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getGameState",
+    outputs: [
+      {
+        internalType: "address",
+        name: "_player1",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_player2",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_betAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_gameActive",
+        type: "bool",
+      },
+      {
+        internalType: "bool",
+        name: "_currentTurnBlack",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "_gameState",
+        type: "uint256",
+      },
+      {
+        internalType: "uint32",
+        name: "_player1State",
+        type: "uint32",
+      },
+      {
+        internalType: "uint32",
+        name: "_player2State",
+        type: "uint32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint8",
@@ -763,6 +846,32 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_player1",
+        type: "address",
+      },
+    ],
+    name: "setPlayer1",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_player2",
+        type: "address",
+      },
+    ],
+    name: "setPlayer2",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

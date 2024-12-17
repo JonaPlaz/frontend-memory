@@ -17,9 +17,7 @@ export const useChessFactory = () => {
     account: address,
   });
 
-  const {
-    data: chessUser
-  } = useReadContract({
+  const { data: chessUser } = useReadContract({
     address: ChessFactoryAddress,
     abi: ChessFactoryABI,
     functionName: "getUser",
@@ -33,11 +31,9 @@ export const useChessFactory = () => {
       functionName,
       args,
     });
-  
+
     return { data, error, isLoading };
   };
-
-
 
   const { writeContract } = useWriteContract();
 
@@ -55,10 +51,30 @@ export const useChessFactory = () => {
 };
 
 export const useChessTemplate = () => {
-  const chessTemplate = useReadContract({
-    address: ChessTemplateAddress,
-    abi: ChessTemplateABI,
-  });
+  const { address } = useAccount();
 
-  return chessTemplate;
+  const readChessTemplate = (functionName: string, args: any[]) => {
+    const { data, error, isLoading } = useReadContract({
+      address: ChessTemplateAddress,
+      abi: ChessTemplateABI,
+      functionName,
+      args,
+    });
+
+    return { data, error, isLoading };
+  };
+
+  const { writeContract } = useWriteContract();
+
+  const writeChessTemplate = (functionName: string, args: any[]) => {
+    writeContract({
+      address: ChessTemplateAddress,
+      abi: ChessTemplateABI,
+      functionName,
+      args,
+      account: address,
+    });
+  };
+
+  return { readChessTemplate, writeChessTemplate };
 };

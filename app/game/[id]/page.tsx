@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Chessground from "@react-chess/chessground";
-import { useChessFactory } from "@/hooks/useContract";
+import { useChessFactory, useChessTemplate } from "@/hooks/useContract";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 import "chessground/assets/chessground.base.css";
@@ -16,6 +16,7 @@ export default function Game() {
   const [fen, setFen] = useState(chess.fen()); // L'état FEN de l'échiquier
   const [movableDests, setMovableDests] = useState(new Map()); // Mouvements valides
   const { chessUser, readChessFactory } = useChessFactory();
+  const { writeChessTemplate } = useChessTemplate();
   const { address: currentAddress } = useAccount();
   const params = useParams();
 
@@ -63,25 +64,42 @@ export default function Game() {
     if (move) {
       setFen(chess.fen()); // Met à jour l'état FEN avec la nouvelle position
       updateMovableDests(); // Met à jour les destinations valides
+
+      // Enregistrement du mouvement sur la blockchain
+      try {
+        const moveCode = encodeMove(orig, dest); // Fonction pour encoder le mouvement en uint16
+        writeChessTemplate("playMove", [moveCode]);
+        console.log(`Mouvement enregistré : ${orig} -> ${dest}`);
+      } catch (error) {
+        console.error("Erreur lors de l'enregistrement sur la blockchain :", error);
+      }
       console.log(`Mouvement valide : ${orig} -> ${dest}`);
     } else {
       console.log("Mouvement invalide");
     }
   };
 
-  // Configuration Chessground
-  const chessgroundConfig = {
-    fen, // Position actuelle
-    orientation: isPlayer1 ? "white" : "black", // Orientation de l'échiquier
-    movable: {
-      color: isPlayer1 ? "white" : isPlayer2 ? "black" : null, // Seules les pièces du joueur peuvent bouger
-      dests: movableDests, // Définit les mouvements valides
-      showDests: true, // Afficher les cases disponibles
-      free: false, // Empêche de bouger les pièces adverses
-    },
-    events: {
-      move: handleMove, // Capture les déplacements
-    },
+  const encodeMove = (from, to) => {
+    const fileMap = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };
+    const encodeSquare = (square) => {
+      const file = fileMap[square[0]];
+      const rank = parseInt(square[1], 10) - 1;
+      if (file < 0 || file > 7 || rank < 0 || rank > 7) {
+        throw new Error(`Invalid square: ${square}`);
+      }
+      return (file << 3) | rank; // Encodage d'une position en 6 bits
+    };
+
+    const fromPos = encodeSquare(from);
+    const toPos = encodeSquare(to);
+
+    if (fromPos > 63 || toPos > 63) {
+      throw new Error(`Encoded positions out of range: fromPos=${fromPos}, toPos=${toPos}`);
+    }
+
+    const encodedMove = (fromPos << 6) | toPos;
+    console.log(`Encoded move: from=${from} (${fromPos}), to=${to} (${toPos}), move=${encodedMove}`);
+    return encodedMove;
   };
 
   useEffect(() => {
@@ -121,9 +139,7 @@ export default function Game() {
               <p className="font-bold">Récompense</p>
               <div className="flex flex-row">
                 <p className="mr-2">
-                  {(Number(gameDetails.data.betAmount) * 2 -
-                    (Number(gameDetails.data.betAmount) * 2) / 20) /
-                    1e18} {" "}
+                  {(Number(gameDetails.data.betAmount) * 2 - (Number(gameDetails.data.betAmount) * 2) / 20) / 1e18}{" "}
                   CHESS
                 </p>
                 <Image src="/images/game_board/award.png" alt="award icon" width={24} height={24} />
