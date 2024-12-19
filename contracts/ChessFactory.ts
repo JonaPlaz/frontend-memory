@@ -319,11 +319,6 @@ export const CONTRACT_ABI = [
         type: "uint256",
       },
       {
-        internalType: "bool",
-        name: "playerStarted",
-        type: "bool",
-      },
-      {
         internalType: "uint256",
         name: "startTime",
         type: "uint256",
@@ -410,11 +405,6 @@ export const CONTRACT_ABI = [
             internalType: "uint256",
             name: "betAmount",
             type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "playerStarted",
-            type: "bool",
           },
           {
             internalType: "uint256",
@@ -525,11 +515,6 @@ export const CONTRACT_ABI = [
             internalType: "uint256",
             name: "betAmount",
             type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "playerStarted",
-            type: "bool",
           },
           {
             internalType: "uint256",
