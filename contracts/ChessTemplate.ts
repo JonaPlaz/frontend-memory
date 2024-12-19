@@ -7,17 +7,7 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
-    name: "GameHasEnded",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "GameNotActive",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidPlayerAddress",
     type: "error",
   },
   {
@@ -31,8 +21,19 @@ export const CONTRACT_ABI = [
     type: "error",
   },
   {
-    inputs: [],
-    name: "PlayerAlreadyAssigned",
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "fromType",
+        type: "uint8",
+      },
+      {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "UnsupportedPieceType",
     type: "error",
   },
   {
@@ -40,12 +41,12 @@ export const CONTRACT_ABI = [
     inputs: [
       {
         indexed: false,
-        internalType: "uint8",
+        internalType: "uint16",
         name: "outcome",
-        type: "uint8",
+        type: "uint16",
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "winner",
         type: "address",
@@ -58,13 +59,13 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "player1",
         type: "address",
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "player2",
         type: "address",
@@ -83,7 +84,7 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
         name: "player",
         type: "address",
@@ -135,6 +136,138 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "checkBishopValidMoves",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "gameState",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "fromPos",
+        type: "uint8",
+      },
+      {
+        internalType: "int8",
+        name: "step",
+        type: "int8",
+      },
+      {
+        internalType: "uint8",
+        name: "limitCheck",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "kingPos",
+        type: "uint8",
+      },
+      {
+        internalType: "bool",
+        name: "currentTurnBlack",
+        type: "bool",
+      },
+    ],
+    name: "checkDirectionBishop",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "gameState",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "fromPos",
+        type: "uint8",
+      },
+      {
+        internalType: "int8",
+        name: "step",
+        type: "int8",
+      },
+      {
+        internalType: "uint8",
+        name: "limitCheck",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "kingPos",
+        type: "uint8",
+      },
+      {
+        internalType: "bool",
+        name: "currentTurnBlack",
+        type: "bool",
+      },
+    ],
+    name: "checkDirectionQueen",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "gameState",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "fromPos",
+        type: "uint8",
+      },
+      {
+        internalType: "int8",
+        name: "step",
+        type: "int8",
+      },
+      {
+        internalType: "uint8",
+        name: "limitCheck",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "kingPos",
+        type: "uint8",
+      },
+      {
+        internalType: "bool",
+        name: "currentTurnBlack",
+        type: "bool",
+      },
+    ],
+    name: "checkDirectionRook",
     outputs: [
       {
         internalType: "bool",
@@ -492,86 +625,12 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
-    name: "currentTurnBlack",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "gameActive",
     outputs: [
       {
         internalType: "bool",
         name: "",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "gameState",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getGameState",
-    outputs: [
-      {
-        internalType: "address",
-        name: "_player1",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_player2",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_betAmount",
-        type: "uint256",
-      },
-      {
-        internalType: "bool",
-        name: "_gameActive",
-        type: "bool",
-      },
-      {
-        internalType: "bool",
-        name: "_currentTurnBlack",
-        type: "bool",
-      },
-      {
-        internalType: "uint256",
-        name: "_gameState",
-        type: "uint256",
-      },
-      {
-        internalType: "uint32",
-        name: "_player1State",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "_player2State",
-        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -692,6 +751,19 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "isGameActive",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -742,9 +814,9 @@ export const CONTRACT_ABI = [
   {
     inputs: [
       {
-        internalType: "uint16",
-        name: "move",
-        type: "uint16",
+        internalType: "uint16[]",
+        name: "moves",
+        type: "uint16[]",
       },
     ],
     name: "playMove",
@@ -767,38 +839,12 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
-    name: "player1State",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "player2",
     outputs: [
       {
         internalType: "address",
         name: "",
         type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "player2State",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -846,6 +892,13 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "setGameActive",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
