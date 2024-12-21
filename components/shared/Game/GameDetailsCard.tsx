@@ -1,61 +1,41 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useReadContract, useWatchContractEvent, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import { useChessFactory } from "@/hooks/useContract";
-import { CONTRACT_ABI as ChessFactoryABI, CONTRACT_ADDRESS as ChessFactoryAddress } from "@/contracts/ChessFactory";
 
-export default function Game() {
+export default function GameDetailsCard() {
+  const { address: sender } = useAccount();
+  const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
   const [games, setGames] = useState<any[]>([]);
-  const { writeChessFactory } = useChessFactory();
-  const { address } = useAccount();
 
-  // Lire toutes les parties existantes
-  const { data: allGames, refetch } = useReadContract({
-    address: ChessFactoryAddress,
-    abi: ChessFactoryABI,
-    functionName: "getAllGameDetails",
-  });
+  const { data: allGameDetails, refetch } = readChessFactory("getAllGameDetails");
+  watchChessFactoryEvent("GameCreated", () => refetch());
 
-  // Mettre à jour l'état lorsqu'une nouvelle partie est créée
-  useWatchContractEvent({
-    address: ChessFactoryAddress,
-    abi: ChessFactoryABI,
-    eventName: "GameCreated",
-    onLogs: () => refetch(),
-  });
-
-  // Fonction pour s'inscrire à une partie
-  const handleRegister = async (gameAddress: string) => {
+  const handleRegisterToGame = async (gameAddress: string) => {
     try {
       writeChessFactory("registerToGame", [gameAddress]);
-      refetch(); // Rafraîchir les données
     } catch (error) {
-      console.error("Erreur lors de l'inscription :", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
+      alert((error as any).message);
     }
   };
 
-  // Mettre à jour l'état local avec les détails des parties
   useEffect(() => {
-    console.log("Données récupérées du contrat :", allGames);
-    if (Array.isArray(allGames)) {
-      setGames(allGames);
+    if (Array.isArray(allGameDetails)) {
+      setGames(allGameDetails);
     }
-  }, [allGames]);
+  }, [allGameDetails]);
 
-  const handlePlay = (gameAddress: string) => {
+  const handleJoinGame = (gameAddress: string) => {
     try {
-      // Redirection vers la page de jeu avec l'ID de la partie
-      window.location.href = `/game/${gameAddress}`;
+      window.location.href = `/in-game/${gameAddress}`;
     } catch (error) {
-      console.error("Erreur lors de l'accès au jeu :", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
+      alert((error as any).message);
     }
   };
 
   return (
-    <div className="games-list">
+    <div className="mb-8">
       {games.map((game, index) => (
         <div key={index} className="flex border-2 border-[#38B6FF] mt-8">
           <Image src="/images/logo/logo_white_bg_blue.png" alt="Logo white Chess to earn" width={200} height={200} />
@@ -89,13 +69,13 @@ export default function Game() {
             <button
               className="btn btn-primary btn-wide mt-6"
               onClick={() =>
-                game.player1.userAddress === address || game.player2.userAddress === address
-                  ? handlePlay(game.gameAddress)
-                  : handleRegister(game.gameAddress)
+                game.player1.userAddress === sender || game.player2.userAddress === sender
+                  ? handleJoinGame(game.gameAddress)
+                  : handleRegisterToGame(game.gameAddress)
               }
-              disabled={!address} // Désactiver si aucun compte connecté
+              disabled={!sender}
             >
-              {game.player1.userAddress === address || game.player2.userAddress === address ? "Jouer" : "S'inscrire"}
+              {game.player1.userAddress === sender || game.player2.userAddress === sender ? "Jouer" : "S'inscrire"}
             </button>
           </div>
         </div>
