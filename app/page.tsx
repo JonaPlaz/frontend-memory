@@ -7,60 +7,52 @@ import GameList from "@/components/shared/GameList/GameList";
 import { useAccount } from "wagmi";
 import RegisterPopIn from "@/components/shared/Register/RegisterPopIn";
 
+interface User {
+  pseudo: string;
+  balance: number;
+}
+
 export default function Home() {
-  const { address, isConnected } = useAccount();
-  const { chessUsers, isLoading, isError, writeChessFactory } = useChessFactory();
-  const [isRegistered, setIsRegistered] = useState(false);
+  const { address: sender, isConnected } = useAccount();
+  const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
+
+  const { data: user, refetch } = useReadChessFactory<User>("getUser");
   const [pseudo, setPseudo] = useState("");
   const [balance, setBalance] = useState(0);
+  
   const [showPopIn, setShowPopIn] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
-  // Réinitialise les états lorsque l'utilisateur se déconnecte
-  useEffect(() => {
-    if (!isConnected) {
-      resetUserState();
-    }
-  }, [isConnected]);
+  useWatchChessFactoryEvent("UserRegistered", () => {
+    refetch();
+  });
 
   useEffect(() => {
-    if (isConnected && address) {
-      resetUserState(); // Réinitialise pour éviter d'afficher des données obsolètes
-      if (!isLoading && !isError) {
-        checkUserRegistration();
-      }
+    if (isConnected) {
+      refetch();
     }
-  }, [isConnected, address, isLoading, isError]);
+  }, [sender]);
 
-  const resetUserState = () => {
-    setIsRegistered(false);
-    setPseudo("");
-    setBalance(0);
-    setShowPopIn(false);
-  };
-
-  const checkUserRegistration = () => {
-    if (!chessUsers || !Array.isArray(chessUsers)) {
-      console.error("Erreur : 'chessUsers' n'est pas un tableau ou est undefined :", chessUsers);
-      return;
-    }
-
-    const user = chessUsers.find((u) => u.userAddress.toLowerCase() === address.toLowerCase());
-
+  useEffect(() => {
     if (user) {
-      setIsRegistered(true);
+      console.log("Updated user data:", user);
       setPseudo(user.pseudo);
       setBalance(user.balance);
+      setIsRegistered(true);
+      setShowPopIn(false);
     } else {
-      setShowPopIn(true); // Affiche la pop-in si l'utilisateur n'est pas enregistré
+      setPseudo("");
+      setBalance(0);
+      setIsRegistered(false);
+      setShowPopIn(true);
     }
-  };
+  }, [user]);
 
-  const registerUser = (newPseudo) => {
-    writeChessFactory("registerUser", [newPseudo]);
+  const registerUser = (newPseudo: string) => {
+    useWriteChessFactory("registerUser", [newPseudo]);
     setShowPopIn(false);
   };
 
-  // Si le portefeuille n'est pas connecté, affichez uniquement le composant <Connect />
   if (!isConnected) {
     return (
       <>
@@ -86,10 +78,10 @@ export default function Home() {
             {isRegistered ? (
               <div>
                 <h3>Hello, {pseudo} !</h3>
-                <p>Solde : {Number(balance) / 10 ** 18} ChessToken </p>
+                <p>Solde : {Number(balance) / 10 ** 18} ChessToken</p>
               </div>
             ) : (
-              <p>Chargement des informations utilisateur...</p>
+              <p>Utilisateur inconnu...</p>
             )}
           </div>
         </div>
