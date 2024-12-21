@@ -1,9 +1,9 @@
 import React, { PureComponent } from "react";
-import Game from "../Game/Game";
+import GameDetailsCard from "../Game/GameDetailsCard";
 
 export class GameList extends PureComponent {
   render() {
-    return <Game />;
+    return <GameDetailsCard />;
   }
 }
 
