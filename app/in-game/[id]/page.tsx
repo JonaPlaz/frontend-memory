@@ -9,19 +9,21 @@ import "chessground/assets/chessground.base.css";
 import "chessground/assets/chessground.brown.css";
 import "chessground/assets/chessground.cburnett.css";
 import { Chess } from "chess.js";
+import { read } from "fs";
 
 export default function Game() {
   const [isReady, setIsReady] = useState(false);
   const [chess] = useState(new Chess()); // Initialise chess.js
   const [fen, setFen] = useState(chess.fen()); // L'état FEN de l'échiquier
   const [movableDests, setMovableDests] = useState(new Map()); // Mouvements valides
-  const { chessUser, readChessFactory } = useChessFactory();
+  const { readChessFactory } = useChessFactory();
   const { writeChessTemplate } = useChessTemplate();
   const { address: currentAddress } = useAccount();
   const params = useParams();
 
   const gameAddress = params.id;
   const gameDetails = readChessFactory("getGameDetails", [gameAddress]);
+  const user = readChessFactory("getUser", [gameAddress]);
 
   const isPlayer1 = currentAddress === gameDetails?.data?.player1?.userAddress;
   const isPlayer2 = currentAddress === gameDetails?.data?.player2?.userAddress;
@@ -115,8 +117,8 @@ export default function Game() {
     <>
       <div className="flex justify-between flex-row">
         <div>
-          <p>Pseudo : {chessUser?.pseudo}</p>
-          <p>Balance : {Number(chessUser?.balance) / 10 ** 18} ChessToken</p>
+          <p>Pseudo : {user?.pseudo}</p>
+          <p>Balance : {Number(user?.balance) / 10 ** 18} ChessToken</p>
         </div>
         <p>Comment ça marche ?</p>
       </div>
