@@ -77,7 +77,7 @@ export default function Instructions() {
             Chess to Earn ! ♟️
           </p>
           <button onClick={handleToggle} className="btn btn-primary mt-8">
-            Voir les parties disponibles
+            Retour
           </button>
         </div>
       )}
