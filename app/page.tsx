@@ -1,16 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useChessFactory } from "@/hooks/useContract";
-import Connect from "@/components/shared/Connect/Connect";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import GameList from "@/components/shared/GameList/GameList";
 import { useAccount } from "wagmi";
+import { useChessFactory } from "@/hooks/useContract";
+
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Connect from "@/components/shared/Connect/Connect";
+import GameList from "@/components/shared/GameList/GameList";
 import RegisterPopIn from "@/components/shared/Register/RegisterPopIn";
 
-interface User {
-  pseudo: string;
-  balance: number;
-}
+import { User } from "@/interfaces/User";
 
 export default function Home() {
   const { address: sender, isConnected } = useAccount();
@@ -28,14 +26,11 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (isConnected) {
       refetch();
-    }
   }, [sender]);
 
   useEffect(() => {
     if (user) {
-      console.log("Updated user data:", user);
       setPseudo(user.pseudo);
       setBalance(user.balance);
       setIsRegistered(true);
@@ -51,6 +46,7 @@ export default function Home() {
   const registerUser = (newPseudo: string) => {
     useWriteChessFactory("registerUser", [newPseudo]);
     setShowPopIn(false);
+    refetch();
   };
 
   if (!isConnected) {
