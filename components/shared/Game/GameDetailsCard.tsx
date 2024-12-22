@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+
 import { useAccount } from "wagmi";
 import { useChessFactory } from "@/hooks/useContract";
 
@@ -11,6 +12,7 @@ export default function GameDetailsCard() {
 
   const { data: allGameDetails, refetch } = useReadChessFactory("getAllGameDetails");
   useWatchChessFactoryEvent("GameCreated", () => refetch());
+  useWatchChessFactoryEvent("PlayerRegistered", () => refetch());
 
   const handleRegisterToGame = async (gameAddress: string) => {
     try {
