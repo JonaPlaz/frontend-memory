@@ -1,7 +1,7 @@
 "use client";
 import { useReadContract, useWriteContract, useWatchContractEvent, useAccount } from "wagmi";
 import { CONTRACT_ABI as ChessFactoryABI, CONTRACT_ADDRESS as ChessFactoryAddress } from "@/contracts/ChessFactory";
-import { CONTRACT_ABI as ChessTemplateABI, CONTRACT_ADDRESS as ChessTemplateAddress } from "@/contracts/ChessTemplate";
+import { CONTRACT_ABI as ChessTemplateABI } from "@/contracts/ChessTemplate";
 
 export const useChessFactory = () => {
   const { address } = useAccount();
@@ -45,23 +45,23 @@ export const useChessFactory = () => {
 export const useChessTemplate = () => {
   const { address } = useAccount();
 
-  const useReadChessTemplate = (functionName: string, args: any[]) => {
-    const { data, isLoading, isError } = useReadContract({
-      address: ChessTemplateAddress,
+  const useReadChessTemplate = (functionName: string, args: any[], cloneAddress: `0x${string}`) => {
+    const { data, isLoading, isError, refetch } = useReadContract({
+      address: cloneAddress,
       abi: ChessTemplateABI,
       functionName,
       args,
       account: address,
     });
 
-    return { data, isLoading, isError };
+    return { data, isLoading, isError, refetch };
   };
 
   const { writeContract } = useWriteContract();
 
-  const useWriteChessTemplate = (functionName: string, args: any[]) => {
-    writeContract({
-      address: ChessTemplateAddress,
+  const useWriteChessTemplate = (functionName: string, args: any[], cloneAddress: `0x${string}`) => {
+    return writeContract({
+      address: cloneAddress,
       abi: ChessTemplateABI,
       functionName,
       args,
@@ -69,5 +69,14 @@ export const useChessTemplate = () => {
     });
   };
 
-  return { useReadChessTemplate, useWriteChessTemplate };
+  const useWatchChessTemplateEvent = (eventName: string, onLogs: () => void, cloneAddress: `0x${string}`) => {
+    useWatchContractEvent({
+      address: cloneAddress,
+      abi: ChessTemplateABI,
+      eventName,
+      onLogs,
+    });
+  };
+
+  return { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent };
 };

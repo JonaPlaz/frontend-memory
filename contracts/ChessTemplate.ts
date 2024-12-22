@@ -637,6 +637,24 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getGameState",
+    outputs: [
+      {
+        internalType: "uint16[]",
+        name: "moves",
+        type: "uint16[]",
+      },
+      {
+        internalType: "uint8",
+        name: "outcome",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint8",
