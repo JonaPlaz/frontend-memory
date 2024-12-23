@@ -42,6 +42,38 @@ export const CONTRACT_ABI = [
       {
         indexed: false,
         internalType: "address",
+        name: "proposer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "accepter",
+        type: "address",
+      },
+    ],
+    name: "DrawAccepted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "proposer",
+        type: "address",
+      },
+    ],
+    name: "DrawProposed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
         name: "loser",
         type: "address",
       },
@@ -136,6 +168,13 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "acceptDraw",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -677,6 +716,19 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
+    name: "drawProposed",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "gameActive",
     outputs: [
       {
@@ -930,6 +982,26 @@ export const CONTRACT_ABI = [
   {
     inputs: [],
     name: "player2",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "proposeDraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "proposer",
     outputs: [
       {
         internalType: "address",
