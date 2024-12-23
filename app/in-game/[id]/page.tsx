@@ -42,6 +42,9 @@ export default function Game() {
   const [showWinnerPopup, setShowWinnerPopup] = useState(false);
   const [showLoserPopup, setShowLoserPopup] = useState(false);
 
+  const [drawProposed, setDrawProposed] = useState(false);
+  const [proposer, setProposer] = useState<string | null>(null);
+
   const { useReadChessFactory } = useChessFactory();
   const { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent } = useChessTemplate();
 
@@ -53,6 +56,9 @@ export default function Game() {
 
   const { data: gameActiveFromSC } = useReadChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
   const { data: gameState } = useReadChessTemplate("getGameState", [], gameAddress as `0x${string}`);
+
+  const { data: drawProposedFromSC } = useReadChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
+  const { data: proposerFromSC } = useReadChessTemplate("proposer", [], gameAddress as `0x${string}`);
 
   useEffect(() => {
     if (typeof gameActiveFromSC === "boolean") {
@@ -158,6 +164,15 @@ export default function Game() {
     }
   }, [gameState, sender]);
 
+  useEffect(() => {
+    if (typeof drawProposedFromSC === "boolean") {
+      setDrawProposed(drawProposedFromSC);
+    }
+    if (proposerFromSC) {
+      setProposer(proposerFromSC);
+    }
+  }, [drawProposedFromSC, proposerFromSC]);
+
   const generateValidMoves = () => {
     const dests = new Map();
     squares.forEach((square) => {
@@ -207,6 +222,24 @@ export default function Game() {
     }
   };
 
+  const handleProposeDraw = () => {
+    try {
+      useWriteChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
+      setDrawProposed(true);
+    } catch (error) {
+      console.error("Erreur lors de la proposition d'égalité :", error);
+    }
+  };
+
+  const handleAcceptDraw = () => {
+    try {
+      useWriteChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
+      setShowToast(false);
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation d'égalité :", error);
+    }
+  };
+
   const chessgroundConfig = {
     fen: chess.fen(),
     orientation: isPlayer1 ? "white" : "black",
@@ -251,6 +284,8 @@ export default function Game() {
           </div>
         </div>
       )}
+
+      {drawProposed && proposer === sender && <p>Vous avez proposé un match nul. Attente de réponse...</p>}
 
       {showInactivePopup && (
         <div className="modal modal-open">
@@ -314,16 +349,29 @@ export default function Game() {
         </div>
         <div className="flex flex-col space-y-8 ml-4">
           <button
-            className="btn btn-primary btn-wide"
-            onClick={() => console.log("Proposer un match nul")} // Implémentez la logique de match nul ici
-            disabled={!gameActive} // Désactivé si le jeu n'est pas actif
+            className={`btn btn-wide ${drawProposed && proposer !== sender ? "btn-success" : "btn-primary"}`}
+            onClick={() => {
+              if (drawProposed && proposer !== sender) {
+                handleAcceptDraw(); // L'autre joueur accepte
+              } else if (!drawProposed) {
+                handleProposeDraw(); // Le joueur propose
+              }
+            }}
+            disabled={
+              !gameActive || // Le jeu doit être actif
+              (drawProposed && proposer === sender) // Désactivé pour le proposant
+            }
           >
-            Match nul
+            {drawProposed && proposer !== sender
+              ? "Accepter le match nul" // Affiché pour l'autre joueur
+              : drawProposed && proposer === sender
+              ? "Match nul (en attente)" // Affiché pour le proposant
+              : "Match nul"}{" "}
           </button>
           <button
             className="btn btn-error btn-wide"
             onClick={handleAbandon}
-            disabled={!gameActive} // Désactivé si le jeu n'est pas actif
+            disabled={!gameActive || drawProposed} // Désactivé si le jeu est inactif ou si une égalité est en attente
           >
             Abandonner
           </button>
