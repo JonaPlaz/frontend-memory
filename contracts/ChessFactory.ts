@@ -60,6 +60,31 @@ export const CONTRACT_ABI = [
       {
         indexed: true,
         internalType: "address",
+        name: "buyer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "ethSpent",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "chessBought",
+        type: "uint256",
+      },
+    ],
+    name: "ChessTokensPurchased",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "gameAddress",
         type: "address",
       },
@@ -209,6 +234,19 @@ export const CONTRACT_ABI = [
     ],
     name: "UserRegistered",
     type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amountInEth",
+        type: "uint256",
+      },
+    ],
+    name: "buyChessTokens",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
   },
   {
     inputs: [],

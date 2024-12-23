@@ -20,15 +20,17 @@ export const useChessFactory = () => {
 
   const { writeContract } = useWriteContract();
 
-  const useWriteChessFactory = (functionName: string, args: any[]) => {
+  const useWriteChessFactory = (functionName: string, args: any[], value: string = "0") => {
     writeContract({
       address: ChessFactoryAddress,
       abi: ChessFactoryABI,
       functionName,
       args,
       account: address,
+      value: BigInt(value),
     });
   };
+  
 
   const useWatchChessFactoryEvent = (eventName: string, onLogs: () => void) => {
     useWatchContractEvent({
