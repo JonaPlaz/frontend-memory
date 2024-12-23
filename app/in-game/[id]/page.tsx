@@ -21,28 +21,80 @@ import { encodeMove } from "@/utils/board/encode";
 import { squares } from "@/utils/board/squares";
 
 export default function Game() {
+  // modifier les récompenses : récupérer les infos de la blockchain
+  // vérifier que la partie est active dans la blockchain pour permettre de jouer, sinon on affiche une popin
+  // si décalage on met un loader
+
+  // 1 - Abandon - popin winner et popin loser - premier chargement de la popin à l'event ou à l'état du status mais pas au click
+  // 2 - Draw - popin pour le proposant et le disposant - impossible de playMove si accepté - plateforme 10% du pot et chq joueur 45% du pot
+  // 3 - victoire de l'opposant si on a pas joué depuis 24h (5 minutes pour les tests) - popin winner et popin loser - impossible de playMove
+
   const { address: sender } = useAccount();
+
+  const [showInactivePopup, setShowInactivePopup] = useState(false);
 
   const [chess] = useState(new Chess());
   const [validMoves, setValidMoves] = useState(new Map());
 
+  const [gameActive, setGameActive] = useState<boolean>(false);
+
   const [showToast, setShowToast] = useState(false);
+  const [showWinnerPopup, setShowWinnerPopup] = useState(false);
+  const [showLoserPopup, setShowLoserPopup] = useState(false);
 
   const { useReadChessFactory } = useChessFactory();
   const { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent } = useChessTemplate();
-  const params = useParams();
 
+  const params = useParams();
   const gameAddress = params.id;
 
   const { data: gameDetails, isLoading } = useReadChessFactory<GameDetails>("getGameDetails", [gameAddress]);
   const { data: user, refetch } = useReadChessFactory<User>("getUser");
 
+  const { data: gameActiveFromSC } = useReadChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
   const { data: gameState } = useReadChessTemplate("getGameState", [], gameAddress as `0x${string}`);
+
+  useEffect(() => {
+    if (typeof gameActiveFromSC === "boolean") {
+      setGameActive(gameActiveFromSC);
+    }
+  }, [gameActiveFromSC]);
 
   useWatchChessTemplateEvent(
     "MovePlayed",
     () => {
       refetch();
+    },
+    gameAddress as `0x${string}`
+  );
+
+  useWatchChessTemplateEvent(
+    "GameAbandoned",
+    () => {
+      refetch();
+      if (gameState) {
+        const [moves, outcome, currentStatus, winner, loser] = gameState;
+
+        // Gérer les pop-ups en fonction du statut
+        if (currentStatus === 2) {
+          // Abandoned
+          if (sender === winner) {
+            setShowWinnerPopup(true);
+          } else if (sender === loser) {
+            setShowLoserPopup(true);
+          }
+        } else if (currentStatus === 3) {
+          // Ended
+          if (sender === winner) {
+            setShowWinnerPopup(true);
+          } else {
+            setShowLoserPopup(true);
+          }
+        }
+
+        // Met à jour l'état actif du jeu
+        setGameActive(currentStatus === 1);
+      }
     },
     gameAddress as `0x${string}`
   );
@@ -70,7 +122,6 @@ export default function Game() {
 
   useEffect(() => {
     handleTurnChange();
-    console.log("GameState", gameState);
     if (gameState && gameState[0].length > 0) {
       const moves = gameState[0];
       chess.reset();
@@ -82,6 +133,30 @@ export default function Game() {
       updateValidMoves();
     }
   }, [gameState]);
+
+  useEffect(() => {
+    if (gameState) {
+      const [moves, outcome, currentStatus, winner, loser] = gameState;
+
+      // Gérer les pop-ups en fonction du statut
+      if (currentStatus === 2) {
+        // Abandoned
+        if (sender === winner) {
+          setShowWinnerPopup(true);
+        } else if (sender === loser) {
+          setShowLoserPopup(true);
+        }
+      } else if (currentStatus === 3) {
+        // Ended
+        if (sender === winner) {
+          setShowWinnerPopup(true);
+        } else {
+          setShowLoserPopup(true);
+        }
+      }
+      setGameActive(gameActiveFromSC);
+    }
+  }, [gameState, sender]);
 
   const generateValidMoves = () => {
     const dests = new Map();
@@ -103,6 +178,11 @@ export default function Game() {
   };
 
   const handleMove = (orig: string, dest: string) => {
+    if (!gameActiveFromSC) {
+      setShowInactivePopup(true);
+      return;
+    }
+
     const move = chess.move({ from: orig, to: dest, promotion: "q" });
     if (move) {
       try {
@@ -115,6 +195,15 @@ export default function Game() {
       }
     } else {
       console.log("Mouvement invalide");
+    }
+  };
+
+  const handleAbandon = () => {
+    try {
+      useWriteChessTemplate("abandon", [], gameAddress as `0x${string}`);
+      setShowLoserPopup(true);
+    } catch (error) {
+      console.error("Erreur lors de l'abandon :", (error as any).message);
     }
   };
 
@@ -135,6 +224,51 @@ export default function Game() {
 
   return (
     <>
+      {showWinnerPopup && (
+        <div className="modal modal-open">
+          <div className="modal-box bg-primary text-white">
+            <h3 className="font-bold text-lg">Félicitations, vous avez gagné !</h3>
+            <p className="py-4">Votre adversaire a abandonné.</p>
+            <div className="modal-action">
+              <button className="btn bg-white text-primary hover:bg-gray-200" onClick={() => setShowWinnerPopup(false)}>
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLoserPopup && (
+        <div className="modal modal-open">
+          <div className="modal-box bg-primary text-white">
+            <h3 className="font-bold text-lg">Vous avez abandonné...</h3>
+            <p className="py-4">Votre adversaire remporte la partie.</p>
+            <div className="modal-action">
+              <button className="btn bg-white text-primary hover:bg-gray-200" onClick={() => setShowLoserPopup(false)}>
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showInactivePopup && (
+        <div className="modal modal-open">
+          <div className="modal-box bg-primary text-white">
+            <h3 className="font-bold text-lg">Le jeu est inactif</h3>
+            <p className="py-4">Impossible de jouer car le jeu est terminé ou abandonné.</p>
+            <div className="modal-action">
+              <button
+                className="btn bg-white text-primary hover:bg-gray-200"
+                onClick={() => setShowInactivePopup(false)}
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between flex-row">
         <div>
           <p>Pseudo : {user?.pseudo}</p>
@@ -168,18 +302,31 @@ export default function Game() {
           )}
         </div>
         <div className="flex flex-col items-center justify-center w-1/3 space-y-4">
-          {showToast && (
+          {showToast && gameActive && (
             <div className="toast">
               <div className="alert bg-primary text-white">
-                <span>A toi de jouer !</span>
+                <span>À toi de jouer !</span>
               </div>
             </div>
           )}
+
           <Chessground width={600} height={600} config={chessgroundConfig} />
         </div>
         <div className="flex flex-col space-y-8 ml-4">
-          <button className="btn btn-primary btn-wide">Draw</button>
-          <button className="btn btn-error btn-wide">Abandon</button>
+          <button
+            className="btn btn-primary btn-wide"
+            onClick={() => console.log("Proposer un match nul")} // Implémentez la logique de match nul ici
+            disabled={!gameActive} // Désactivé si le jeu n'est pas actif
+          >
+            Match nul
+          </button>
+          <button
+            className="btn btn-error btn-wide"
+            onClick={handleAbandon}
+            disabled={!gameActive} // Désactivé si le jeu n'est pas actif
+          >
+            Abandonner
+          </button>
         </div>
       </div>
     </>

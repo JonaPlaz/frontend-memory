@@ -258,6 +258,39 @@ export const CONTRACT_ABI = [
     inputs: [
       {
         internalType: "address",
+        name: "player1",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "player2",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "platformFee",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "winnerReward",
+        type: "uint256",
+      },
+    ],
+    name: "distributeRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "",
         type: "address",
       },
