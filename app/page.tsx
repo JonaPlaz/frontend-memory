@@ -11,13 +11,15 @@ import RegisterPopIn from "@/components/shared/Register/RegisterPopIn";
 import { User } from "@/interfaces/User";
 
 export default function Home() {
+  // 1- le user peut acheter du ChessToken avec de l'eth
+  // 2- le user peut retirer ses propres fonds pour les mettre sur son wallet
   const { address: sender, isConnected } = useAccount();
   const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
 
   const { data: user, refetch } = useReadChessFactory<User>("getUser");
   const [pseudo, setPseudo] = useState("");
   const [balance, setBalance] = useState(0);
-  
+
   const [showPopIn, setShowPopIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
@@ -26,7 +28,13 @@ export default function Home() {
   });
 
   useEffect(() => {
-      refetch();
+    if (!user) {
+      setShowPopIn(true);
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    refetch();
   }, [sender]);
 
   useEffect(() => {

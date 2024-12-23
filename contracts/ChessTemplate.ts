@@ -41,6 +41,25 @@ export const CONTRACT_ABI = [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "loser",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+    ],
+    name: "GameAbandoned",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint16",
         name: "outcome",
         type: "uint16",
@@ -98,6 +117,26 @@ export const CONTRACT_ABI = [
     ],
     name: "MovePlayed",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "abandon",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "abandoner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
@@ -595,6 +634,19 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "chessFactory",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -649,6 +701,21 @@ export const CONTRACT_ABI = [
         internalType: "uint8",
         name: "outcome",
         type: "uint8",
+      },
+      {
+        internalType: "enum ChessTemplate.GameStatus",
+        name: "currentStatus",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "loser",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -761,6 +828,11 @@ export const CONTRACT_ABI = [
         internalType: "uint256",
         name: "_betAmount",
         type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_chessFactory",
+        type: "address",
       },
     ],
     name: "initialize",
@@ -972,6 +1044,19 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "status",
+    outputs: [
+      {
+        internalType: "enum ChessTemplate.GameStatus",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
