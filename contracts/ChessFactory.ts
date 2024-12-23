@@ -216,6 +216,43 @@ export const CONTRACT_ABI = [
       {
         indexed: true,
         internalType: "address",
+        name: "player1",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "player2",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "platformFee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "reward",
+        type: "uint256",
+      },
+    ],
+    name: "RewardsDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "user",
         type: "address",
       },
@@ -316,7 +353,7 @@ export const CONTRACT_ABI = [
       },
       {
         internalType: "uint256",
-        name: "winnerReward",
+        name: "reward",
         type: "uint256",
       },
     ],
