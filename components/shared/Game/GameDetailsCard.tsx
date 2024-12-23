@@ -60,9 +60,7 @@ export default function GameDetailsCard() {
               <div>
                 <p>Récompense</p>
                 <div className="flex flex-row">
-                  <p className="mr-2">
-                    {(Number(game.betAmount) * 2 - (Number(game.betAmount) * 2) / 20) / 1e18} CHESS
-                  </p>
+                  <p className="mr-2">{(Number(game.betAmount) * 2 * 0.75) / 1e18} CHESS</p>
                   <Image src="/images/game/award.png" alt="award icon" width={24} height={24} />
                 </div>
               </div>
