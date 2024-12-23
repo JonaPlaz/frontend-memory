@@ -331,9 +331,7 @@ export default function Game() {
               </p>
               <p className="font-bold">Récompense</p>
               <div className="flex flex-row">
-                <p className="mr-2">
-                  {(Number(gameDetails.betAmount) * 2 - (Number(gameDetails.betAmount) * 2) / 20) / 1e18} CHESS
-                </p>
+                <p className="mr-2">{(Number(gameDetails.betAmount) * 2 * 0.75) / 1e18} CHESS</p>
                 <Image src="/images/game_board/award.png" alt="award icon" width={24} height={24} />
               </div>
             </div>
