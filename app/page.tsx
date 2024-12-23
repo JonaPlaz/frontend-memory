@@ -27,7 +27,20 @@ export default function Home() {
   const [showPopIn, setShowPopIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ethToSpend, setEthToSpend] = useState("");
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEthToSpend(""); // Réinitialiser le champ à la fermeture
+  };
+
   useWatchChessFactoryEvent("UserRegistered", () => {
+    refetch();
+  });
+
+  useWatchChessFactoryEvent("ChessTokensPurchased", () => {
     refetch();
   });
 
@@ -55,6 +68,20 @@ export default function Home() {
     }
   }, [user]);
 
+  const buyChessTokens = (amountInEth: number) => {
+    useWriteChessFactory("buyChessTokens", [BigInt(amountInEth * 10 ** 18)], (amountInEth * 10 ** 18).toString());
+  };
+
+  const handleBuyTokens = () => {
+    const amount = parseFloat(ethToSpend);
+    if (!isNaN(amount) && amount > 0) {
+      buyChessTokens(amount); // Appel à votre fonction d'achat
+      closeModal();
+    } else {
+      alert("Veuillez entrer un montant valide.");
+    }
+  };
+
   const registerUser = (newPseudo: string) => {
     useWriteChessFactory("registerUser", [newPseudo]);
     setShowPopIn(false);
@@ -79,8 +106,39 @@ export default function Home() {
     <>
       <div className="flex flex-grow">
         <div className="flex flex-row justify-between w-full">
-          <div className="my-4">
-            <ConnectButton />
+          <div className="flex flex-col">
+            <div className="my-4">
+              <ConnectButton />
+            </div>
+            {/* Bouton pour ouvrir la modal */}
+            <button className="btn btn-primary" onClick={openModal}>
+              Acheter ChessTokens
+            </button>
+
+            {/* Modal */}
+            {isModalOpen && (
+              <div className="modal modal-open">
+                <div className="modal-box">
+                  <h3 className="font-bold text-lg">Acheter des ChessTokens</h3>
+                  <p className="py-4">Entrez le montant d'ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)</p>
+                  <input
+                    type="text"
+                    placeholder="Montant en ETH"
+                    className="input input-bordered w-full"
+                    value={ethToSpend}
+                    onChange={(e) => setEthToSpend(e.target.value)}
+                  />
+                  <div className="modal-action">
+                    <button className="btn btn-primary" onClick={handleBuyTokens}>
+                      Valider
+                    </button>
+                    <button className="btn" onClick={closeModal}>
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <div className="my-8">
             {isRegistered ? (
