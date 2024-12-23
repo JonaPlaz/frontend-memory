@@ -28,6 +28,9 @@ export default function Game() {
   // 1 - Abandon - popin winner et popin loser - premier chargement de la popin à l'event ou à l'état du status mais pas au click
   // 2 - Draw - popin pour le proposant et le disposant - impossible de playMove si accepté - plateforme 10% du pot et chq joueur 45% du pot
   // 3 - victoire de l'opposant si on a pas joué depuis 24h (5 minutes pour les tests) - popin winner et popin loser - impossible de playMove
+  // 4 - echet et mat
+
+  // 5 - flèche retour home : faire le lien
 
   const { address: sender } = useAccount();
 

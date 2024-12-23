@@ -13,6 +13,10 @@ import { User } from "@/interfaces/User";
 export default function Home() {
   // 1- le user peut acheter du ChessToken avec de l'eth
   // 2- le user peut retirer ses propres fonds pour les mettre sur son wallet
+  // 3- pour le user 2 qui participe À une partie : le nouveau solde ne s'affiche pas automatiquement
+
+  // 4- qui paie les frais les réseau
+
   const { address: sender, isConnected } = useAccount();
   const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
 
