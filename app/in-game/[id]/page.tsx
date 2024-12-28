@@ -21,54 +21,56 @@ import { encodeMove } from "@/utils/board/encode";
 import { squares } from "@/utils/board/squares";
 
 export default function Game() {
-  // modifier les récompenses : récupérer les infos de la blockchain
-  // vérifier que la partie est active dans la blockchain pour permettre de jouer, sinon on affiche une popin
-  // si décalage on met un loader
-
-  // 1 - Abandon - popin winner et popin loser - premier chargement de la popin à l'event ou à l'état du status mais pas au click
-  // 2 - Draw - popin pour le proposant et le disposant - impossible de playMove si accepté - plateforme 10% du pot et chq joueur 45% du pot
-  // 3 - victoire de l'opposant si on a pas joué depuis 24h (5 minutes pour les tests) - popin winner et popin loser - impossible de playMove
-  // 4 - echet et mat
-
-  // 5 - flèche retour home : faire le lien
-
   const { address: sender } = useAccount();
 
-  const [showInactivePopup, setShowInactivePopup] = useState(false);
-
+  // État local pour le plateau d'échecs
   const [chess] = useState(new Chess());
   const [validMoves, setValidMoves] = useState(new Map());
 
+  // État pour connaître si la partie est active
   const [gameActive, setGameActive] = useState<boolean>(false);
 
+  // Gestion des toasts (à toi de jouer)
   const [showToast, setShowToast] = useState(false);
-  const [showWinnerPopup, setShowWinnerPopup] = useState(false);
-  const [showLoserPopup, setShowLoserPopup] = useState(false);
 
+  // Modal si la partie est inactif
+  const [showInactivePopup, setShowInactivePopup] = useState(false);
+
+  // States pour la proposition de nulle
   const [drawProposed, setDrawProposed] = useState(false);
   const [proposer, setProposer] = useState<string | null>(null);
 
+  // Modal de fin de partie
+  const [showEndGameModal, setShowEndGameModal] = useState(false);
+  const [endGameTitle, setEndGameTitle] = useState("");
+  const [endGameMessage, setEndGameMessage] = useState("");
+
+  // Récupération des hooks de contrat
   const { useReadChessFactory } = useChessFactory();
   const { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent } = useChessTemplate();
 
+  // Récupération des params
   const params = useParams();
   const gameAddress = params.id;
 
+  // Récupère les infos de la partie
   const { data: gameDetails, isLoading } = useReadChessFactory<GameDetails>("getGameDetails", [gameAddress]);
   const { data: user, refetch } = useReadChessFactory<User>("getUser");
 
+  // Récupère le statut inactif, gameState, drawProposed, etc.
   const { data: gameActiveFromSC } = useReadChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
   const { data: gameState } = useReadChessTemplate("getGameState", [], gameAddress as `0x${string}`);
-
   const { data: drawProposedFromSC } = useReadChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
   const { data: proposerFromSC } = useReadChessTemplate("proposer", [], gameAddress as `0x${string}`);
 
+  // On met à jour notre état local "gameActive"
   useEffect(() => {
     if (typeof gameActiveFromSC === "boolean") {
       setGameActive(gameActiveFromSC);
     }
   }, [gameActiveFromSC]);
 
+  // Sur un MovePlayed, on refetch pour mettre à jour
   useWatchChessTemplateEvent(
     "MovePlayed",
     () => {
@@ -77,96 +79,82 @@ export default function Game() {
     gameAddress as `0x${string}`
   );
 
+  // Sur Abandon (status=3)
   useWatchChessTemplateEvent(
     "GameAbandoned",
     () => {
       refetch();
       if (gameState) {
         const [moves, outcome, currentStatus, winner, loser] = gameState;
-
-        // Gérer les pop-ups en fonction du statut
-        if (currentStatus === 2) {
-          // Abandoned
-          if (sender === winner) {
-            setShowWinnerPopup(true);
-          } else if (sender === loser) {
-            setShowLoserPopup(true);
-          }
-        } else if (currentStatus === 3) {
-          // Ended
-          if (sender === winner) {
-            setShowWinnerPopup(true);
-          } else {
-            setShowLoserPopup(true);
-          }
+        if (currentStatus === 3) {
+          handleEndGameModal(winner, loser, sender, "Abandon");
         }
-
-        // Met à jour l'état actif du jeu
         setGameActive(currentStatus === 1);
       }
     },
     gameAddress as `0x${string}`
   );
 
+  // Sur GameEnded (status=4)
   useWatchChessTemplateEvent(
     "GameEnded",
     () => {
-      console.log("La partie est terminée !");
+      refetch();
+      if (gameState) {
+        const [moves, outcome, currentStatus, winner, loser] = gameState;
+        if (currentStatus === 4) {
+          handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
+        }
+      }
     },
     gameAddress as `0x${string}`
   );
 
-  const isPlayer1 = sender === gameDetails?.player1?.userAddress;
-  const isPlayer2 = sender === gameDetails?.player2?.userAddress;
-
-  const handleTurnChange = () => {
-    const turn = chess.turn();
-    const isPlayerTurn = (turn === "w" && isPlayer1) || (turn === "b" && isPlayer2);
-    setShowToast(isPlayerTurn);
-  };
-
-  useEffect(() => {
-    updateValidMoves();
-  }, []);
-
-  useEffect(() => {
-    handleTurnChange();
-    if (gameState && gameState[0].length > 0) {
-      const moves = gameState[0];
-      chess.reset();
-      moves.forEach((encodedMove: number) => {
-        const from = decodeSquare(encodedMove >> 6);
-        const to = decodeSquare(encodedMove & 0x3f);
-        chess.move({ from, to });
-      });
-      updateValidMoves();
-    }
-  }, [gameState]);
-
+  // Au rechargement de la page, si la partie est déjà en 3 ou 4, on ouvre la modal
   useEffect(() => {
     if (gameState) {
       const [moves, outcome, currentStatus, winner, loser] = gameState;
 
-      // Gérer les pop-ups en fonction du statut
-      if (currentStatus === 2) {
-        // Abandoned
-        if (sender === winner) {
-          setShowWinnerPopup(true);
-        } else if (sender === loser) {
-          setShowLoserPopup(true);
-        }
-      } else if (currentStatus === 3) {
-        // Ended
-        if (sender === winner) {
-          setShowWinnerPopup(true);
-        } else {
-          setShowLoserPopup(true);
-        }
+      if (currentStatus === 3) {
+        // Abandon
+        handleEndGameModal(winner, loser, sender, "Abandon");
+      } else if (currentStatus === 4) {
+        // Fin (mat ou autre)
+        handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
       }
-      setGameActive(gameActiveFromSC);
+      // Maj de "gameActive"
+      setGameActive(currentStatus === 1);
     }
   }, [gameState, sender]);
 
+  // handleEndGameModal => ouvre la modal en fonction du winner/loser
+  function handleEndGameModal(winner: string, loser: string, localUser: string | undefined, typeMessage: string) {
+    if (!localUser) return;
+
+    // Calcul du nouveau solde => user?.balance / 1e18
+    const newBalance = user ? Number(user.balance) / 1e18 : 0;
+
+    if (localUser === winner) {
+      // Gagnant
+      setEndGameTitle("Félicitations, vous avez gagné ! 🏆");
+      setEndGameMessage(
+        `Type de fin: ${typeMessage}\n\n` +
+          `Vous recevez ${(Number(gameDetails.betAmount) * 2 * 0.75) / 1e18} CHESS\n\n` +
+          `Votre nouveau solde : ${newBalance.toFixed(2)} CHESS`
+      );
+    } else if (localUser === loser) {
+      // Perdant
+      setEndGameTitle("Vous avez perdu !");
+      setEndGameMessage("Dommage, réessayez une prochaine fois.");
+    } else {
+      // Observateur
+      setEndGameTitle("La partie est terminée.");
+      setEndGameMessage(`Type de fin : ${typeMessage}`);
+    }
+    setShowEndGameModal(true);
+  }
+
+  // Mise à jour de drawProposed
   useEffect(() => {
     if (typeof drawProposedFromSC === "boolean") {
       setDrawProposed(drawProposedFromSC);
@@ -176,6 +164,7 @@ export default function Game() {
     }
   }, [drawProposedFromSC, proposerFromSC]);
 
+  // Fonctions utilitaires pour générer / mettre à jour moves
   const generateValidMoves = () => {
     const dests = new Map();
     squares.forEach((square) => {
@@ -195,6 +184,36 @@ export default function Game() {
     setValidMoves(dests);
   };
 
+  // Contrôle du tour => si c'est au localUser de jouer => showToast
+  const handleTurnChange = () => {
+    const turn = chess.turn();
+    const isPlayerTurn =
+      (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
+      (turn === "b" && sender === gameDetails?.player2?.userAddress);
+    setShowToast(isPlayerTurn);
+  };
+
+  // Au montage => update moves
+  useEffect(() => {
+    updateValidMoves();
+  }, []);
+
+  // À chaque update de gameState => reconstruit le board local
+  useEffect(() => {
+    handleTurnChange();
+    if (gameState && gameState[0].length > 0) {
+      const moves = gameState[0];
+      chess.reset();
+      moves.forEach((encodedMove: number) => {
+        const from = decodeSquare(encodedMove >> 6);
+        const to = decodeSquare(encodedMove & 0x3f);
+        chess.move({ from, to });
+      });
+      updateValidMoves();
+    }
+  }, [gameState]);
+
+  // Jouer un coup => encode moves => write SC
   const handleMove = (orig: string, dest: string) => {
     if (!gameActiveFromSC) {
       setShowInactivePopup(true);
@@ -216,15 +235,16 @@ export default function Game() {
     }
   };
 
+  // Abandon => status=3 => event "GameAbandoned"
   const handleAbandon = () => {
     try {
       useWriteChessTemplate("abandon", [], gameAddress as `0x${string}`);
-      setShowLoserPopup(true);
     } catch (error) {
       console.error("Erreur lors de l'abandon :", (error as any).message);
     }
   };
 
+  // Proposer nulle
   const handleProposeDraw = () => {
     try {
       useWriteChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
@@ -234,6 +254,7 @@ export default function Game() {
     }
   };
 
+  // Accepter nulle
   const handleAcceptDraw = () => {
     try {
       useWriteChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
@@ -243,6 +264,9 @@ export default function Game() {
     }
   };
 
+  // Configuration Chessground
+  const isPlayer1 = sender === gameDetails?.player1?.userAddress;
+  const isPlayer2 = sender === gameDetails?.player2?.userAddress;
   const chessgroundConfig = {
     fen: chess.fen(),
     orientation: isPlayer1 ? "white" : "black",
@@ -260,13 +284,17 @@ export default function Game() {
 
   return (
     <>
-      {showWinnerPopup && (
+      {/* Modal de fin de partie (Gagnant / Perdant) */}
+      {showEndGameModal && (
         <div className="modal modal-open">
           <div className="modal-box bg-primary text-white">
-            <h3 className="font-bold text-lg">Félicitations, vous avez gagné !</h3>
-            <p className="py-4">Votre adversaire a abandonné.</p>
+            <h3 className="font-bold text-lg whitespace-pre-line">{endGameTitle}</h3>
+            <p className="py-4 whitespace-pre-line">{endGameMessage}</p>
             <div className="modal-action">
-              <button className="btn bg-white text-primary hover:bg-gray-200" onClick={() => setShowWinnerPopup(false)}>
+              <button
+                className="btn bg-white text-primary hover:bg-gray-200"
+                onClick={() => setShowEndGameModal(false)}
+              >
                 Fermer
               </button>
             </div>
@@ -274,22 +302,7 @@ export default function Game() {
         </div>
       )}
 
-      {showLoserPopup && (
-        <div className="modal modal-open">
-          <div className="modal-box bg-primary text-white">
-            <h3 className="font-bold text-lg">Vous avez abandonné...</h3>
-            <p className="py-4">Votre adversaire remporte la partie.</p>
-            <div className="modal-action">
-              <button className="btn bg-white text-primary hover:bg-gray-200" onClick={() => setShowLoserPopup(false)}>
-                Fermer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {drawProposed && proposer === sender && <p>Vous avez proposé un match nul. Attente de réponse...</p>}
-
+      {/* Modal si le jeu est inactif */}
       {showInactivePopup && (
         <div className="modal modal-open">
           <div className="modal-box bg-primary text-white">
@@ -307,12 +320,15 @@ export default function Game() {
         </div>
       )}
 
+      {/* Barre info du joueur */}
       <div className="flex justify-between flex-row">
         <div>
           <p>Pseudo : {user?.pseudo}</p>
-          <p>Balance : {Number(user?.balance) / 10 ** 18} ChessToken</p>
+          <p>Balance : {Number(user?.balance) / 1e18} ChessToken</p>
         </div>
       </div>
+
+      {/* Section principale */}
       <div className="flex items-center justify-center">
         <div className="flex flex-col space-y-8 mr-4">
           <Image
@@ -337,6 +353,8 @@ export default function Game() {
             </div>
           )}
         </div>
+
+        {/* Plateau d'échecs */}
         <div className="flex flex-col items-center justify-center w-1/3 space-y-4">
           {showToast && gameActive && (
             <div className="toast">
@@ -345,35 +363,30 @@ export default function Game() {
               </div>
             </div>
           )}
-
           <Chessground width={600} height={600} config={chessgroundConfig} />
         </div>
+
+        {/* Boutons d'actions (nulle, abandon) */}
         <div className="flex flex-col space-y-8 ml-4">
           <button
             className={`btn btn-wide ${drawProposed && proposer !== sender ? "btn-success" : "btn-primary"}`}
             onClick={() => {
               if (drawProposed && proposer !== sender) {
-                handleAcceptDraw(); // L'autre joueur accepte
+                handleAcceptDraw();
               } else if (!drawProposed) {
-                handleProposeDraw(); // Le joueur propose
+                handleProposeDraw();
               }
             }}
-            disabled={
-              !gameActive || // Le jeu doit être actif
-              (drawProposed && proposer === sender) // Désactivé pour le proposant
-            }
+            disabled={!gameActive || (drawProposed && proposer === sender)}
           >
             {drawProposed && proposer !== sender
-              ? "Accepter le match nul" // Affiché pour l'autre joueur
+              ? "Accepter le match nul"
               : drawProposed && proposer === sender
-              ? "Match nul (en attente)" // Affiché pour le proposant
-              : "Match nul"}{" "}
+              ? "Match nul (en attente)"
+              : "Match nul"}
           </button>
-          <button
-            className="btn btn-error btn-wide"
-            onClick={handleAbandon}
-            disabled={!gameActive || drawProposed} // Désactivé si le jeu est inactif ou si une égalité est en attente
-          >
+
+          <button className="btn btn-error btn-wide" onClick={handleAbandon} disabled={!gameActive || drawProposed}>
             Abandonner
           </button>
         </div>

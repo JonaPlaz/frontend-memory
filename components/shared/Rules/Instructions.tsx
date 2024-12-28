@@ -67,11 +67,11 @@ export default function Instructions() {
           <h2 className="mt-6 font-bold">Options en cours de partie :</h2>
           <ul className="list-disc pl-6">
             <li>
-              <strong>Proposer un match nul :</strong> Un joueur peut proposer un match nul en cliquant sur "Draw". Si
+              <strong>Proposer un match nul :</strong> Un joueur peut proposer un match nul en cliquant sur "Match nul". Si
               l’autre joueur accepte, la partie est déclarée nulle, et les gains sont partagés.
             </li>
             <li>
-              <strong>Abandon :</strong> Un joueur peut abandonner à tout moment en cliquant sur "Abandon". Dans ce cas,
+              <strong>Abandonner :</strong> Un joueur peut abandonner à tout moment en cliquant sur "Abandonner". Dans ce cas,
               l’autre joueur est déclaré vainqueur et remporte les gains.
             </li>
           </ul>
