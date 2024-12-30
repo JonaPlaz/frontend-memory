@@ -13,7 +13,37 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
+    name: "AlreadyRegisteredToGame",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "EmptyPseudo",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "EtherTransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "FailedDeployment",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "GameAlreadyFull",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "GameDoesNotExist",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientAllowance",
     type: "error",
   },
   {
@@ -30,6 +60,41 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientContractBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientPlatformBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidBetAmount",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidChessTokenAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidTemplateAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotParticipant",
     type: "error",
   },
   {
@@ -55,6 +120,41 @@ export const CONTRACT_ABI = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "ReentrancyGuardReentrantCall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StartIndexOutOfBounds",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StartTimeInPast",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "TokenTransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "UserAlreadyRegistered",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "UserNotRegistered",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "WinnerNotRegistered",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -77,6 +177,25 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "ChessTokensPurchased",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "EtherWithdrawn",
     type: "event",
   },
   {
@@ -245,6 +364,25 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "RewardsDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "TokensWithdrawn",
     type: "event",
   },
   {
@@ -455,110 +593,6 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "getAllGameDetails",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "gameAddress",
-            type: "address",
-          },
-          {
-            components: [
-              {
-                internalType: "address",
-                name: "userAddress",
-                type: "address",
-              },
-              {
-                internalType: "string",
-                name: "pseudo",
-                type: "string",
-              },
-              {
-                internalType: "uint256",
-                name: "balance",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct ChessFactory.User",
-            name: "player1",
-            type: "tuple",
-          },
-          {
-            components: [
-              {
-                internalType: "address",
-                name: "userAddress",
-                type: "address",
-              },
-              {
-                internalType: "string",
-                name: "pseudo",
-                type: "string",
-              },
-              {
-                internalType: "uint256",
-                name: "balance",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct ChessFactory.User",
-            name: "player2",
-            type: "tuple",
-          },
-          {
-            internalType: "uint256",
-            name: "betAmount",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "startTime",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct ChessFactory.Game[]",
-        name: "",
-        type: "tuple[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getAllUsers",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "userAddress",
-            type: "address",
-          },
-          {
-            internalType: "string",
-            name: "pseudo",
-            type: "string",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct ChessFactory.User[]",
-        name: "",
-        type: "tuple[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "address",
@@ -631,8 +665,93 @@ export const CONTRACT_ABI = [
           },
         ],
         internalType: "struct ChessFactory.Game",
-        name: "",
+        name: "game",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "start",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
+      },
+    ],
+    name: "getGames",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "gameAddress",
+            type: "address",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "userAddress",
+                type: "address",
+              },
+              {
+                internalType: "string",
+                name: "pseudo",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "balance",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ChessFactory.User",
+            name: "player1",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "userAddress",
+                type: "address",
+              },
+              {
+                internalType: "string",
+                name: "pseudo",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "balance",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ChessFactory.User",
+            name: "player2",
+            type: "tuple",
+          },
+          {
+            internalType: "uint256",
+            name: "betAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ChessFactory.Game[]",
+        name: "allGames",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -661,8 +780,49 @@ export const CONTRACT_ABI = [
           },
         ],
         internalType: "struct ChessFactory.User",
-        name: "",
+        name: "user",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "start",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
+      },
+    ],
+    name: "getUsers",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "userAddress",
+            type: "address",
+          },
+          {
+            internalType: "string",
+            name: "pseudo",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ChessFactory.User[]",
+        name: "allUsers",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -845,5 +1005,35 @@ export const CONTRACT_ABI = [
     ],
     stateMutability: "view",
     type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawEther",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    stateMutability: "payable",
+    type: "receive",
   },
 ];

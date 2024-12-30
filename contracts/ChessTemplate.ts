@@ -2,12 +2,42 @@ export const CONTRACT_ADDRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 export const CONTRACT_ABI = [
   {
     inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [],
     name: "AlreadyInitialized",
     type: "error",
   },
   {
     inputs: [],
+    name: "DrawAlreadyProposed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "EmptyMovesArray",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "GameAlreadyActive",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "GameNotActive",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidChessFactory",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidPlayers",
     type: "error",
   },
   {
@@ -18,6 +48,53 @@ export const CONTRACT_ABI = [
   {
     inputs: [],
     name: "NotYourTurn",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "OnlyChessFactory",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "PlayersNotRegistered",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ProposerCannotAccept",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ReentrancyGuardReentrantCall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "TimeoutNotPassed",
     type: "error",
   },
   {
@@ -40,13 +117,13 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "proposer",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "accepter",
         type: "address",
@@ -59,7 +136,7 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "proposer",
         type: "address",
@@ -72,13 +149,13 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "loser",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "winner",
         type: "address",
@@ -97,7 +174,7 @@ export const CONTRACT_ABI = [
         type: "uint16",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "winner",
         type: "address",
@@ -110,13 +187,51 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "loser",
+        type: "address",
+      },
+    ],
+    name: "GameEndedForTimeout",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "address",
         name: "player1",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
+        internalType: "address",
+        name: "player2",
+        type: "address",
+      },
+    ],
+    name: "GameForcedDraw",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "player1",
+        type: "address",
+      },
+      {
+        indexed: true,
         internalType: "address",
         name: "player2",
         type: "address",
@@ -135,7 +250,7 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player",
         type: "address",
@@ -149,6 +264,90 @@ export const CONTRACT_ABI = [
     ],
     name: "MovePlayed",
     type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "BET_AMOUNT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "DRAW_REWARD",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "MOVE_TIMEOUT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "PLATFORM_FEE",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "WINNER_REWARD",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
@@ -175,19 +374,6 @@ export const CONTRACT_ABI = [
     name: "acceptDraw",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "betAmount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -677,7 +863,7 @@ export const CONTRACT_ABI = [
     name: "chessFactory",
     outputs: [
       {
-        internalType: "address",
+        internalType: "contract IChessFactory",
         name: "",
         type: "address",
       },
@@ -725,6 +911,20 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "forceDrawDueToTimeout",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "forceWinDueToTimeout",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -877,11 +1077,6 @@ export const CONTRACT_ABI = [
         type: "address",
       },
       {
-        internalType: "uint256",
-        name: "_betAmount",
-        type: "uint256",
-      },
-      {
         internalType: "address",
         name: "_chessFactory",
         type: "address",
@@ -900,6 +1095,45 @@ export const CONTRACT_ABI = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "lastMoveTime",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "moveCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -1010,6 +1244,13 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1129,6 +1370,19 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
