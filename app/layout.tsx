@@ -11,7 +11,9 @@ export const metadata = {
   description: "Web3 Chess Game",
 };
 
-export default function RootLayout({ children }) {
+import { ReactNode } from "react";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
