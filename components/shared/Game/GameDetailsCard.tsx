@@ -80,8 +80,8 @@ export default function GameDetailsCard() {
               className="btn btn-primary btn-wide mt-6"
               onClick={() =>
                 game.player1.userAddress === sender || game.player2.userAddress === sender
-                  ? handleJoinGame(game.gameAddress)
-                  : handleRegisterToGame(game.gameAddress)
+                  ? handleJoinGame(game.gameAddress.toString())
+                  : handleRegisterToGame(game.gameAddress.toString())
               }
               disabled={!sender}
             >
