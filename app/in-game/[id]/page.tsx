@@ -266,19 +266,19 @@ export default function Game() {
   const isPlayer1 = sender === gameDetails?.player1?.userAddress;
   const isPlayer2 = sender === gameDetails?.player2?.userAddress;
   const chessgroundConfig = {
-    fen: chess.fen(),
-    orientation: isPlayer1 ? "white" : "black",
-    turnColor: chess.turn() === "w" ? "white" : "black",
-    movable: {
-      color: isPlayer1 ? "white" : isPlayer2 ? "black" : null,
-      dests: validMoves,
-      showDests: true,
-      free: false,
-    },
-    events: {
-      move: handleMove,
-    },
-  };
+      fen: chess.fen(),
+      orientation: isPlayer1 ? "white" as const : "black" as const,
+      turnColor: chess.turn() === "w" ? "white" as const : "black" as const,
+      movable: {
+        color: isPlayer1 ? "white" as const : isPlayer2 ? "black" as const : undefined,
+        dests: validMoves,
+        showDests: true,
+        free: false,
+      },
+      events: {
+        move: handleMove,
+      },
+    };
 
   return (
     <>
