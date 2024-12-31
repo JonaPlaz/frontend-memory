@@ -1,7 +1,9 @@
 'use client';
 import { useState } from "react";
+import { RegisterPopIn as RegisterPopInProps } from "@/interfaces/RegisterPopIn";
 
-const RegisterPopIn = ({ title, description, onSubmit, onCancel }) => {
+
+const RegisterPopIn = ({ title, description, onSubmit, onCancel }: RegisterPopInProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleSubmit = () => {

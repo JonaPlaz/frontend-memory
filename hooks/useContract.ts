@@ -6,7 +6,7 @@ import { CONTRACT_ABI as ChessTemplateABI } from "@/contracts/ChessTemplate";
 export const useChessFactory = () => {
   const { address } = useAccount();
 
-  const useReadChessFactory = <T = unknown>(functionName: string, args: any[] = []) => {
+  const readChessFactory = <T = unknown>(functionName: string, args: any[] = []) => {
     const { data, isLoading, isError, refetch } = useReadContract({
       address: ChessFactoryAddress,
       abi: ChessFactoryABI,
@@ -20,7 +20,7 @@ export const useChessFactory = () => {
 
   const { writeContract } = useWriteContract();
 
-  const useWriteChessFactory = (functionName: string, args: any[], value: string = "0") => {
+  const writeChessFactory = (functionName: string, args: any[], value: string = "0") => {
     writeContract({
       address: ChessFactoryAddress,
       abi: ChessFactoryABI,
@@ -32,7 +32,7 @@ export const useChessFactory = () => {
   };
   
 
-  const useWatchChessFactoryEvent = (eventName: string, onLogs: () => void) => {
+  const watchChessFactoryEvent = (eventName: string, onLogs: () => void) => {
     useWatchContractEvent({
       address: ChessFactoryAddress,
       abi: ChessFactoryABI,
@@ -41,27 +41,27 @@ export const useChessFactory = () => {
     });
   };
 
-  return { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent };
+  return { readChessFactory, writeChessFactory, watchChessFactoryEvent };
 };
 
 export const useChessTemplate = () => {
   const { address } = useAccount();
 
-  const useReadChessTemplate = (functionName: string, args: any[], cloneAddress: `0x${string}`) => {
+  const readChessTemplate = <T>(functionName: string, args: any[], cloneAddress: `0x${string}`) => {
     const { data, isLoading, isError, refetch } = useReadContract({
       address: cloneAddress,
       abi: ChessTemplateABI,
       functionName,
       args,
-      account: address,
     });
-
-    return { data, isLoading, isError, refetch };
+  
+    return { data: data as T, isLoading, isError, refetch };
   };
+  
 
   const { writeContract } = useWriteContract();
 
-  const useWriteChessTemplate = (functionName: string, args: any[], cloneAddress: `0x${string}`) => {
+  const writeChessTemplate = (functionName: string, args: any[], cloneAddress: `0x${string}`) => {
     return writeContract({
       address: cloneAddress,
       abi: ChessTemplateABI,
@@ -71,7 +71,7 @@ export const useChessTemplate = () => {
     });
   };
 
-  const useWatchChessTemplateEvent = (eventName: string, onLogs: () => void, cloneAddress: `0x${string}`) => {
+  const watchChessTemplateEvent = (eventName: string, onLogs: () => void, cloneAddress: `0x${string}`) => {
     useWatchContractEvent({
       address: cloneAddress,
       abi: ChessTemplateABI,
@@ -80,5 +80,5 @@ export const useChessTemplate = () => {
     });
   };
 
-  return { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent };
+  return { readChessTemplate, writeChessTemplate, watchChessTemplateEvent };
 };

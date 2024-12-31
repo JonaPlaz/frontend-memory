@@ -1,5 +1,6 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
+// @ts-expect-error: Module 'lodash.merge' lacks type definitions
 import merge from 'lodash.merge';
 import {
     getDefaultConfig,
@@ -47,7 +48,9 @@ const config = getDefaultConfig({
 
 const queryClient = new QueryClient();
 
-const CustomRainbowKitProvider = ({ children }) => {
+import { ReactNode } from 'react';
+
+const CustomRainbowKitProvider = ({ children }: { children: ReactNode }) => {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>

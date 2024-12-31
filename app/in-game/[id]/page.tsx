@@ -46,22 +46,23 @@ export default function Game() {
   const [endGameMessage, setEndGameMessage] = useState("");
 
   // Récupération des hooks de contrat
-  const { useReadChessFactory } = useChessFactory();
-  const { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent } = useChessTemplate();
+  const { readChessFactory } = useChessFactory();
+  const { readChessTemplate, writeChessTemplate, watchChessTemplateEvent } = useChessTemplate();
 
   // Récupération des params
   const params = useParams();
   const gameAddress = params.id;
 
   // Récupère les infos de la partie
-  const { data: gameDetails, isLoading } = useReadChessFactory<GameDetails>("getGameDetails", [gameAddress]);
-  const { data: user, refetch } = useReadChessFactory<User>("getUser");
+  const { data: gameDetails, isLoading } = readChessFactory<GameDetails>("getGameDetails", [gameAddress]);
+  const { data: user, refetch } = readChessFactory<User>("getUser");
 
   // Récupère le statut inactif, gameState, drawProposed, etc.
-  const { data: gameActiveFromSC } = useReadChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
-  const { data: gameState } = useReadChessTemplate("getGameState", [], gameAddress as `0x${string}`);
-  const { data: drawProposedFromSC } = useReadChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
-  const { data: proposerFromSC } = useReadChessTemplate("proposer", [], gameAddress as `0x${string}`);
+  const { data: gameActiveFromSC } = readChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
+  const gameState = readChessTemplate<[number, string, string]>("getGameState", [], gameAddress as `0x${string}`)
+    ?.data || [[], "", ""];
+  const { data: drawProposedFromSC } = readChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
+  const { data: proposerFromSC } = readChessTemplate("proposer", [], gameAddress as `0x${string}`);
 
   // On met à jour notre état local "gameActive"
   useEffect(() => {
@@ -71,7 +72,7 @@ export default function Game() {
   }, [gameActiveFromSC]);
 
   // Sur un MovePlayed, on refetch pour mettre à jour
-  useWatchChessTemplateEvent(
+  watchChessTemplateEvent(
     "MovePlayed",
     () => {
       refetch();
@@ -80,13 +81,13 @@ export default function Game() {
   );
 
   // Sur Abandon (status=3)
-  useWatchChessTemplateEvent(
+  watchChessTemplateEvent(
     "GameAbandoned",
     () => {
       refetch();
       if (gameState) {
-        const [moves, outcome, currentStatus, winner, loser] = gameState;
-        if (currentStatus === 3) {
+        const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
+        if (currentStatus !== null && currentStatus === 3) {
           handleEndGameModal(winner, loser, sender, "Abandon");
         }
         setGameActive(currentStatus === 1);
@@ -96,12 +97,12 @@ export default function Game() {
   );
 
   // Sur GameEnded (status=4)
-  useWatchChessTemplateEvent(
+  watchChessTemplateEvent(
     "GameEnded",
     () => {
       refetch();
       if (gameState) {
-        const [moves, outcome, currentStatus, winner, loser] = gameState;
+        const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
         if (currentStatus === 4) {
           handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
         }
@@ -113,7 +114,7 @@ export default function Game() {
   // Au rechargement de la page, si la partie est déjà en 3 ou 4, on ouvre la modal
   useEffect(() => {
     if (gameState) {
-      const [moves, outcome, currentStatus, winner, loser] = gameState;
+      const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
 
       if (currentStatus === 3) {
         // Abandon
@@ -160,7 +161,7 @@ export default function Game() {
       setDrawProposed(drawProposedFromSC);
     }
     if (proposerFromSC) {
-      setProposer(proposerFromSC);
+      setProposer(proposerFromSC as string);
     }
   }, [drawProposedFromSC, proposerFromSC]);
 
@@ -185,13 +186,13 @@ export default function Game() {
   };
 
   // Contrôle du tour => si c'est au localUser de jouer => showToast
-  const handleTurnChange = () => {
-    const turn = chess.turn();
-    const isPlayerTurn =
-      (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
-      (turn === "b" && sender === gameDetails?.player2?.userAddress);
-    setShowToast(isPlayerTurn);
-  };
+  // const handleTurnChange = () => {
+  //   const turn = chess.turn();
+  //   const isPlayerTurn =
+  //     (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
+  //     (turn === "b" && sender === gameDetails?.player2?.userAddress);
+  //   setShowToast(isPlayerTurn);
+  // };
 
   // Au montage => update moves
   useEffect(() => {
@@ -200,9 +201,8 @@ export default function Game() {
 
   // À chaque update de gameState => reconstruit le board local
   useEffect(() => {
-    handleTurnChange();
-    if (gameState && gameState[0].length > 0) {
-      const moves = gameState[0];
+    if (Array.isArray(gameState) && gameState[0]) {
+      const moves = Array.isArray(gameState[0]) ? gameState[0] : [];
       chess.reset();
       moves.forEach((encodedMove: number) => {
         const from = decodeSquare(encodedMove >> 6);
@@ -225,10 +225,10 @@ export default function Game() {
       try {
         const moves = chess.history({ verbose: true });
         const encodedMoves = moves.map(({ from, to }) => encodeMove(from, to));
-        useWriteChessTemplate("playMove", [encodedMoves], gameAddress as `0x${string}`);
+        writeChessTemplate("playMove", [encodedMoves], gameAddress as `0x${string}`);
         setShowToast(false);
       } catch (error) {
-        console.error("Erreur lors de l'envoi du mouvement :", (error as any).message);
+        console.error("Erreur lors de l'envoi du mouvement :", error);
       }
     } else {
       console.log("Mouvement invalide");
@@ -238,26 +238,24 @@ export default function Game() {
   // Abandon => status=3 => event "GameAbandoned"
   const handleAbandon = () => {
     try {
-      useWriteChessTemplate("abandon", [], gameAddress as `0x${string}`);
+      writeChessTemplate("abandon", [], gameAddress as `0x${string}`);
     } catch (error) {
-      console.error("Erreur lors de l'abandon :", (error as any).message);
+      console.error("Erreur lors de l'abandon :", error);
     }
   };
 
-  // Proposer nulle
   const handleProposeDraw = () => {
     try {
-      useWriteChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
+      writeChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
       setDrawProposed(true);
     } catch (error) {
       console.error("Erreur lors de la proposition d'égalité :", error);
     }
   };
 
-  // Accepter nulle
   const handleAcceptDraw = () => {
     try {
-      useWriteChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
+      writeChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
       setShowToast(false);
     } catch (error) {
       console.error("Erreur lors de l'acceptation d'égalité :", error);
@@ -268,19 +266,19 @@ export default function Game() {
   const isPlayer1 = sender === gameDetails?.player1?.userAddress;
   const isPlayer2 = sender === gameDetails?.player2?.userAddress;
   const chessgroundConfig = {
-    fen: chess.fen(),
-    orientation: isPlayer1 ? "white" : "black",
-    turnColor: chess.turn() === "w" ? "white" : "black",
-    movable: {
-      color: isPlayer1 ? "white" : isPlayer2 ? "black" : null,
-      dests: validMoves,
-      showDests: true,
-      free: false,
-    },
-    events: {
-      move: handleMove,
-    },
-  };
+      fen: chess.fen(),
+      orientation: isPlayer1 ? "white" as const : "black" as const,
+      turnColor: chess.turn() === "w" ? "white" as const : "black" as const,
+      movable: {
+        color: isPlayer1 ? "white" as const : isPlayer2 ? "black" as const : undefined,
+        dests: validMoves,
+        showDests: true,
+        free: false,
+      },
+      events: {
+        move: handleMove,
+      },
+    };
 
   return (
     <>

@@ -4,22 +4,27 @@ import Image from "next/image";
 
 import { useAccount } from "wagmi";
 import { useChessFactory } from "@/hooks/useContract";
+import { GameDetails } from "@/interfaces/GameDetails";
 
 export default function GameDetailsCard() {
   const { address: sender } = useAccount();
-  const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
-  const [games, setGames] = useState<any[]>([]);
+  const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
+  const [games, setGames] = useState<GameDetails[]>([]);
 
-  const { data: gamesDetails, refetch } = useReadChessFactory("getGames", [0, 20]);
-  console.log(gamesDetails);
-  useWatchChessFactoryEvent("GameCreated", () => refetch());
-  useWatchChessFactoryEvent("PlayerRegistered", () => refetch());
+  const { data: gamesDetails, refetch } = readChessFactory("getGames", [0, 20]);
+
+  watchChessFactoryEvent("GameCreated", () => refetch());
+  watchChessFactoryEvent("PlayerRegistered", () => refetch());
 
   const handleRegisterToGame = async (gameAddress: string) => {
     try {
-      useWriteChessFactory("registerToGame", [gameAddress]);
+      writeChessFactory("registerToGame", [gameAddress]);
     } catch (error) {
-      alert((error as any).message);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred");
+      }
     }
   };
 
@@ -33,7 +38,11 @@ export default function GameDetailsCard() {
     try {
       window.location.href = `/in-game/${gameAddress}`;
     } catch (error) {
-      alert((error as any).message);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred");
+      }
     }
   };
 
@@ -55,7 +64,7 @@ export default function GameDetailsCard() {
                 <p>{new Date(Number(game.startTime) * 1000).toLocaleString()}</p>
               </div>
               <div>
-                <p>Frais d'inscription</p>
+                <p>Frais d&apos;inscription</p>
                 <p>{Number(game.betAmount) / 1e18} CHESS</p>
               </div>
               <div>
@@ -71,8 +80,8 @@ export default function GameDetailsCard() {
               className="btn btn-primary btn-wide mt-6"
               onClick={() =>
                 game.player1.userAddress === sender || game.player2.userAddress === sender
-                  ? handleJoinGame(game.gameAddress)
-                  : handleRegisterToGame(game.gameAddress)
+                  ? handleJoinGame(game.gameAddress.toString())
+                  : handleRegisterToGame(game.gameAddress.toString())
               }
               disabled={!sender}
             >

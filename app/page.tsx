@@ -11,16 +11,13 @@ import RegisterPopIn from "@/components/shared/Register/RegisterPopIn";
 import { User } from "@/interfaces/User";
 
 export default function Home() {
-  // 1- le user peut acheter du ChessToken avec de l'eth
   // 2- le user peut retirer ses propres fonds pour les mettre sur son wallet
-  // 3- pour le user 2 qui participe À une partie : le nouveau solde ne s'affiche pas automatiquement
-
   // 4- qui paie les frais les réseau
 
   const { address: sender, isConnected } = useAccount();
-  const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
+  const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
 
-  const { data: user, refetch } = useReadChessFactory<User>("getUser");
+  const { data: user, refetch } = readChessFactory<User>("getUser");
   const [pseudo, setPseudo] = useState("");
   const [balance, setBalance] = useState(0);
 
@@ -36,11 +33,11 @@ export default function Home() {
     setEthToSpend(""); // Réinitialiser le champ à la fermeture
   };
 
-  useWatchChessFactoryEvent("UserRegistered", () => {
+  watchChessFactoryEvent("UserRegistered", () => {
     refetch();
   });
 
-  useWatchChessFactoryEvent("ChessTokensPurchased", () => {
+  watchChessFactoryEvent("ChessTokensPurchased", () => {
     refetch();
   });
 
@@ -69,7 +66,7 @@ export default function Home() {
   }, [user]);
 
   const buyChessTokens = (amountInEth: number) => {
-    useWriteChessFactory("buyChessTokens", [BigInt(amountInEth * 10 ** 18)], (amountInEth * 10 ** 18).toString());
+    writeChessFactory("buyChessTokens", [BigInt(amountInEth * 10 ** 18)], (amountInEth * 10 ** 18).toString());
   };
 
   const handleBuyTokens = () => {
@@ -83,7 +80,7 @@ export default function Home() {
   };
 
   const registerUser = (newPseudo: string) => {
-    useWriteChessFactory("registerUser", [newPseudo]);
+    writeChessFactory("registerUser", [newPseudo]);
     setShowPopIn(false);
     refetch();
   };
@@ -120,7 +117,9 @@ export default function Home() {
               <div className="modal modal-open">
                 <div className="modal-box">
                   <h3 className="font-bold text-lg">Acheter des ChessTokens</h3>
-                  <p className="py-4">Entrez le montant d'ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)</p>
+                  <p className="py-4">
+                    Entrez le montant d&apos;ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)
+                  </p>
                   <input
                     type="text"
                     placeholder="Montant en ETH"
