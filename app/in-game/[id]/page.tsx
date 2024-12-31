@@ -46,22 +46,22 @@ export default function Game() {
   const [endGameMessage, setEndGameMessage] = useState("");
 
   // Récupération des hooks de contrat
-  const { useReadChessFactory } = useChessFactory();
-  const { useReadChessTemplate, useWriteChessTemplate, useWatchChessTemplateEvent } = useChessTemplate();
+  const { readChessFactory } = useChessFactory();
+  const { readChessTemplate, writeChessTemplate, watchChessTemplateEvent } = useChessTemplate();
 
   // Récupération des params
   const params = useParams();
   const gameAddress = params.id;
 
   // Récupère les infos de la partie
-  const { data: gameDetails, isLoading } = useReadChessFactory<GameDetails>("getGameDetails", [gameAddress]);
-  const { data: user, refetch } = useReadChessFactory<User>("getUser");
+  const { data: gameDetails, isLoading } = readChessFactory<GameDetails>("getGameDetails", [gameAddress]);
+  const { data: user, refetch } = readChessFactory<User>("getUser");
 
   // Récupère le statut inactif, gameState, drawProposed, etc.
-  const { data: gameActiveFromSC } = useReadChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
-  const { data: gameState } = useReadChessTemplate("getGameState", [], gameAddress as `0x${string}`);
-  const { data: drawProposedFromSC } = useReadChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
-  const { data: proposerFromSC } = useReadChessTemplate("proposer", [], gameAddress as `0x${string}`);
+  const { data: gameActiveFromSC } = readChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
+  const { data: gameState } = readChessTemplate("getGameState", [], gameAddress as `0x${string}`);
+  const { data: drawProposedFromSC } = readChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
+  const { data: proposerFromSC } = readChessTemplate("proposer", [], gameAddress as `0x${string}`);
 
   // On met à jour notre état local "gameActive"
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function Game() {
   }, [gameActiveFromSC]);
 
   // Sur un MovePlayed, on refetch pour mettre à jour
-  useWatchChessTemplateEvent(
+  watchChessTemplateEvent(
     "MovePlayed",
     () => {
       refetch();
@@ -80,7 +80,7 @@ export default function Game() {
   );
 
   // Sur Abandon (status=3)
-  useWatchChessTemplateEvent(
+  watchChessTemplateEvent(
     "GameAbandoned",
     () => {
       refetch();
@@ -96,7 +96,7 @@ export default function Game() {
   );
 
   // Sur GameEnded (status=4)
-  useWatchChessTemplateEvent(
+  watchChessTemplateEvent(
     "GameEnded",
     () => {
       refetch();
@@ -225,7 +225,7 @@ export default function Game() {
       try {
         const moves = chess.history({ verbose: true });
         const encodedMoves = moves.map(({ from, to }) => encodeMove(from, to));
-        useWriteChessTemplate("playMove", [encodedMoves], gameAddress as `0x${string}`);
+        writeChessTemplate("playMove", [encodedMoves], gameAddress as `0x${string}`);
         setShowToast(false);
       } catch (error) {
         console.error("Erreur lors de l'envoi du mouvement :", (error as any).message);
@@ -238,7 +238,7 @@ export default function Game() {
   // Abandon => status=3 => event "GameAbandoned"
   const handleAbandon = () => {
     try {
-      useWriteChessTemplate("abandon", [], gameAddress as `0x${string}`);
+      writeChessTemplate("abandon", [], gameAddress as `0x${string}`);
     } catch (error) {
       console.error("Erreur lors de l'abandon :", (error as any).message);
     }
@@ -247,7 +247,7 @@ export default function Game() {
   // Proposer nulle
   const handleProposeDraw = () => {
     try {
-      useWriteChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
+      writeChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
       setDrawProposed(true);
     } catch (error) {
       console.error("Erreur lors de la proposition d'égalité :", error);
@@ -257,7 +257,7 @@ export default function Game() {
   // Accepter nulle
   const handleAcceptDraw = () => {
     try {
-      useWriteChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
+      writeChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
       setShowToast(false);
     } catch (error) {
       console.error("Erreur lors de l'acceptation d'égalité :", error);

@@ -18,9 +18,9 @@ export default function Home() {
   // 4- qui paie les frais les réseau
 
   const { address: sender, isConnected } = useAccount();
-  const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
+  const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
 
-  const { data: user, refetch } = useReadChessFactory<User>("getUser");
+  const { data: user, refetch } = readChessFactory<User>("getUser");
   const [pseudo, setPseudo] = useState("");
   const [balance, setBalance] = useState(0);
 
@@ -36,11 +36,11 @@ export default function Home() {
     setEthToSpend(""); // Réinitialiser le champ à la fermeture
   };
 
-  useWatchChessFactoryEvent("UserRegistered", () => {
+  watchChessFactoryEvent("UserRegistered", () => {
     refetch();
   });
 
-  useWatchChessFactoryEvent("ChessTokensPurchased", () => {
+  watchChessFactoryEvent("ChessTokensPurchased", () => {
     refetch();
   });
 
@@ -69,7 +69,7 @@ export default function Home() {
   }, [user]);
 
   const buyChessTokens = (amountInEth: number) => {
-    useWriteChessFactory("buyChessTokens", [BigInt(amountInEth * 10 ** 18)], (amountInEth * 10 ** 18).toString());
+    writeChessFactory("buyChessTokens", [BigInt(amountInEth * 10 ** 18)], (amountInEth * 10 ** 18).toString());
   };
 
   const handleBuyTokens = () => {
@@ -83,7 +83,7 @@ export default function Home() {
   };
 
   const registerUser = (newPseudo: string) => {
-    useWriteChessFactory("registerUser", [newPseudo]);
+    writeChessFactory("registerUser", [newPseudo]);
     setShowPopIn(false);
     refetch();
   };

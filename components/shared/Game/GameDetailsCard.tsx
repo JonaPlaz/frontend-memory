@@ -7,17 +7,17 @@ import { useChessFactory } from "@/hooks/useContract";
 
 export default function GameDetailsCard() {
   const { address: sender } = useAccount();
-  const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
+  const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
   const [games, setGames] = useState<any[]>([]);
 
-  const { data: gamesDetails, refetch } = useReadChessFactory("getGames", [0, 20]);
+  const { data: gamesDetails, refetch } = readChessFactory("getGames", [0, 20]);
   console.log(gamesDetails);
-  useWatchChessFactoryEvent("GameCreated", () => refetch());
-  useWatchChessFactoryEvent("PlayerRegistered", () => refetch());
+  watchChessFactoryEvent("GameCreated", () => refetch());
+  watchChessFactoryEvent("PlayerRegistered", () => refetch());
 
   const handleRegisterToGame = async (gameAddress: string) => {
     try {
-      useWriteChessFactory("registerToGame", [gameAddress]);
+      writeChessFactory("registerToGame", [gameAddress]);
     } catch (error) {
       alert((error as any).message);
     }
