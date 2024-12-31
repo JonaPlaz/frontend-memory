@@ -186,13 +186,13 @@ export default function Game() {
   };
 
   // Contrôle du tour => si c'est au localUser de jouer => showToast
-  const handleTurnChange = () => {
-    const turn = chess.turn();
-    const isPlayerTurn =
-      (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
-      (turn === "b" && sender === gameDetails?.player2?.userAddress);
-    setShowToast(isPlayerTurn);
-  };
+  // const handleTurnChange = () => {
+  //   const turn = chess.turn();
+  //   const isPlayerTurn =
+  //     (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
+  //     (turn === "b" && sender === gameDetails?.player2?.userAddress);
+  //   setShowToast(isPlayerTurn);
+  // };
 
   // Au montage => update moves
   useEffect(() => {
