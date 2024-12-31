@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x61078B53a46Bd29667655b2f5641202373505562";
+export const CONTRACT_ADDRESS = "0x5BfcACcdB46AfE4fADA538d6dF9BBFF69529Ad7D";
 export const CONTRACT_ABI = [
   {
     inputs: [
@@ -10,11 +10,6 @@ export const CONTRACT_ABI = [
     ],
     stateMutability: "nonpayable",
     type: "constructor",
-  },
-  {
-    inputs: [],
-    name: "AlreadyRegisteredToGame",
-    type: "error",
   },
   {
     inputs: [],
