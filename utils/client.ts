@@ -1,7 +1,9 @@
-import { createPublicClient, http } from 'viem'
-import { localhost } from 'viem/chains'
+import { createPublicClient, http } from "viem";
+import { holesky } from "viem/chains";
+
+const RPC = process.env.NEXT_PUBLIC_HOLESKY_RPC || "";
 
 export const publicClient = createPublicClient({
-  chain: localhost,
-  transport: http(process.env.RPC),
-})
+  chain: holesky,
+  transport: http(RPC),
+});
