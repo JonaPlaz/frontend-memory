@@ -10,7 +10,8 @@ export default function GameDetailsCard() {
   const { useReadChessFactory, useWriteChessFactory, useWatchChessFactoryEvent } = useChessFactory();
   const [games, setGames] = useState<any[]>([]);
 
-  const { data: allGameDetails, refetch } = useReadChessFactory("getAllGameDetails");
+  const { data: gamesDetails, refetch } = useReadChessFactory("getGames", [0, 20]);
+  console.log(gamesDetails);
   useWatchChessFactoryEvent("GameCreated", () => refetch());
   useWatchChessFactoryEvent("PlayerRegistered", () => refetch());
 
@@ -23,10 +24,10 @@ export default function GameDetailsCard() {
   };
 
   useEffect(() => {
-    if (Array.isArray(allGameDetails)) {
-      setGames(allGameDetails);
+    if (Array.isArray(gamesDetails)) {
+      setGames(gamesDetails);
     }
-  }, [allGameDetails]);
+  }, [gamesDetails]);
 
   const handleJoinGame = (gameAddress: string) => {
     try {
