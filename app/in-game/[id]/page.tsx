@@ -85,7 +85,7 @@ export default function Game() {
     () => {
       refetch();
       if (gameState) {
-        const [currentStatus, winner, loser] = gameState;
+        const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
         if (currentStatus === 3) {
           handleEndGameModal(winner, loser, sender, "Abandon");
         }
@@ -101,7 +101,7 @@ export default function Game() {
     () => {
       refetch();
       if (gameState) {
-        const [currentStatus, winner, loser] = gameState;
+        const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
         if (currentStatus === 4) {
           handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
         }
@@ -113,7 +113,7 @@ export default function Game() {
   // Au rechargement de la page, si la partie est déjà en 3 ou 4, on ouvre la modal
   useEffect(() => {
     if (gameState) {
-      const [currentStatus, winner, loser] = gameState;
+      const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
 
       if (currentStatus === 3) {
         // Abandon
