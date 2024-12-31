@@ -11,10 +11,7 @@ import RegisterPopIn from "@/components/shared/Register/RegisterPopIn";
 import { User } from "@/interfaces/User";
 
 export default function Home() {
-  // 1- le user peut acheter du ChessToken avec de l'eth
   // 2- le user peut retirer ses propres fonds pour les mettre sur son wallet
-  // 3- pour le user 2 qui participe À une partie : le nouveau solde ne s'affiche pas automatiquement
-
   // 4- qui paie les frais les réseau
 
   const { address: sender, isConnected } = useAccount();
@@ -120,7 +117,9 @@ export default function Home() {
               <div className="modal modal-open">
                 <div className="modal-box">
                   <h3 className="font-bold text-lg">Acheter des ChessTokens</h3>
-                  <p className="py-4">Entrez le montant d'ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)</p>
+                  <p className="py-4">
+                    Entrez le montant d&apos;ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)
+                  </p>
                   <input
                     type="text"
                     placeholder="Montant en ETH"
