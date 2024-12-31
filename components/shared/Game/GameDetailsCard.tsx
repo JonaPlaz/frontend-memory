@@ -11,7 +11,7 @@ export default function GameDetailsCard() {
   const [games, setGames] = useState([]);
 
   const { data: gamesDetails, refetch } = readChessFactory("getGames", [0, 20]);
-  console.log(gamesDetails);
+
   watchChessFactoryEvent("GameCreated", () => refetch());
   watchChessFactoryEvent("PlayerRegistered", () => refetch());
 
