@@ -160,7 +160,7 @@ export default function Game() {
       setDrawProposed(drawProposedFromSC);
     }
     if (proposerFromSC) {
-      setProposer(proposerFromSC);
+      setProposer(proposerFromSC as string);
     }
   }, [drawProposedFromSC, proposerFromSC]);
 
