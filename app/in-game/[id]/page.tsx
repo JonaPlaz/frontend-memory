@@ -59,7 +59,7 @@ export default function Game() {
 
   // Récupère le statut inactif, gameState, drawProposed, etc.
   const { data: gameActiveFromSC } = readChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
-  const gameState = readChessTemplate<[number[], string, string]>("getGameState", [], gameAddress as `0x${string}`)
+  const gameState = readChessTemplate<[number, string, string]>("getGameState", [], gameAddress as `0x${string}`)
     ?.data || [[], "", ""];
   const { data: drawProposedFromSC } = readChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
   const { data: proposerFromSC } = readChessTemplate("proposer", [], gameAddress as `0x${string}`);
@@ -87,7 +87,7 @@ export default function Game() {
       refetch();
       if (gameState) {
         const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
-        if (currentStatus === 3) {
+        if (currentStatus !== null && currentStatus === 3) {
           handleEndGameModal(winner, loser, sender, "Abandon");
         }
         setGameActive(currentStatus === 1);
