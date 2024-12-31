@@ -1,5 +1,6 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
+// @ts-ignore
 import merge from 'lodash.merge';
 import {
     getDefaultConfig,
