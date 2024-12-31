@@ -228,7 +228,7 @@ export default function Game() {
         writeChessTemplate("playMove", [encodedMoves], gameAddress as `0x${string}`);
         setShowToast(false);
       } catch (error) {
-        console.error("Erreur lors de l'envoi du mouvement :", (error as any).message);
+        console.error("Erreur lors de l'envoi du mouvement :", error);
       }
     } else {
       console.log("Mouvement invalide");
@@ -240,11 +240,10 @@ export default function Game() {
     try {
       writeChessTemplate("abandon", [], gameAddress as `0x${string}`);
     } catch (error) {
-      console.error("Erreur lors de l'abandon :", (error as any).message);
+      console.error("Erreur lors de l'abandon :", error);
     }
   };
 
-  // Proposer nulle
   const handleProposeDraw = () => {
     try {
       writeChessTemplate("proposeDraw", [], gameAddress as `0x${string}`);
@@ -254,7 +253,6 @@ export default function Game() {
     }
   };
 
-  // Accepter nulle
   const handleAcceptDraw = () => {
     try {
       writeChessTemplate("acceptDraw", [], gameAddress as `0x${string}`);
