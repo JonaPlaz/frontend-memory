@@ -48,7 +48,9 @@ const config = getDefaultConfig({
 
 const queryClient = new QueryClient();
 
-const CustomRainbowKitProvider = ({ children }) => {
+import { ReactNode } from 'react';
+
+const CustomRainbowKitProvider = ({ children }: { children: ReactNode }) => {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
