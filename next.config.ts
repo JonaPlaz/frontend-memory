@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   webpack: (config) => {
-    config.externals.push('encoding', /* add any other modules that might be causing the error */);
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.externals.push('pino-pretty', 'encoding');
     return config;
   },
 };
