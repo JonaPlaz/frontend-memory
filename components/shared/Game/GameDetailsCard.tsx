@@ -55,7 +55,7 @@ export default function GameDetailsCard() {
                 <p>{new Date(Number(game.startTime) * 1000).toLocaleString()}</p>
               </div>
               <div>
-                <p>Frais d'inscription</p>
+                <p>Frais d&apos;inscription</p>
                 <p>{Number(game.betAmount) / 1e18} CHESS</p>
               </div>
               <div>
