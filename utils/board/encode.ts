@@ -7,11 +7,7 @@ export const encodeMove = (from: string, to: string) => {
 const fileMap = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };
 
 const encodeSquare = (square: string) => {
-  const fileKey = square[0];
-  if (!(fileKey in fileMap)) {
-    throw new Error(`Invalid file: ${fileKey}`);
-  }
-  const file = fileMap[fileKey as keyof typeof fileMap];
+  const file = fileMap[square[0] as keyof typeof fileMap];
   const rank = parseInt(square[1], 10) - 1;
   const encoded = (rank << 3) | file;
 
