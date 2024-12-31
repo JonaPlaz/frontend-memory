@@ -8,7 +8,7 @@ import { useChessFactory } from "@/hooks/useContract";
 export default function GameDetailsCard() {
   const { address: sender } = useAccount();
   const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
-  const [games, setGames] = useState<any[]>([]);
+  const [games, setGames] = useState([]);
 
   const { data: gamesDetails, refetch } = readChessFactory("getGames", [0, 20]);
   console.log(gamesDetails);
@@ -19,7 +19,7 @@ export default function GameDetailsCard() {
     try {
       writeChessFactory("registerToGame", [gameAddress]);
     } catch (error) {
-      alert((error as any).message);
+      alert(error.message);
     }
   };
 
@@ -33,7 +33,7 @@ export default function GameDetailsCard() {
     try {
       window.location.href = `/in-game/${gameAddress}`;
     } catch (error) {
-      alert((error as any).message);
+      alert(error.message);
     }
   };
 
