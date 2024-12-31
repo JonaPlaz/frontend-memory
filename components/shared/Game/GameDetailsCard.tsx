@@ -4,11 +4,12 @@ import Image from "next/image";
 
 import { useAccount } from "wagmi";
 import { useChessFactory } from "@/hooks/useContract";
+import { GameDetails } from "@/interfaces/GameDetails";
 
 export default function GameDetailsCard() {
   const { address: sender } = useAccount();
   const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<GameDetails[]>([]);
 
   const { data: gamesDetails, refetch } = readChessFactory("getGames", [0, 20]);
 
