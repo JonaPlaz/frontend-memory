@@ -1,6 +1,6 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
-// @ts-expect-error
+// @ts-expect-error: Module 'lodash.merge' lacks type definitions
 import merge from 'lodash.merge';
 import {
     getDefaultConfig,
