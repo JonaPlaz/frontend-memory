@@ -59,7 +59,8 @@ export default function Game() {
 
   // Récupère le statut inactif, gameState, drawProposed, etc.
   const { data: gameActiveFromSC } = readChessTemplate("isGameActive", [], gameAddress as `0x${string}`);
-  const { data: gameState } = readChessTemplate("getGameState", [], gameAddress as `0x${string}`);
+  const gameState = readChessTemplate<[number[], string, string]>("getGameState", [], gameAddress as `0x${string}`)
+    ?.data || [[], "", ""];
   const { data: drawProposedFromSC } = readChessTemplate("drawProposed", [], gameAddress as `0x${string}`);
   const { data: proposerFromSC } = readChessTemplate("proposer", [], gameAddress as `0x${string}`);
 
@@ -200,9 +201,8 @@ export default function Game() {
 
   // À chaque update de gameState => reconstruit le board local
   useEffect(() => {
-    handleTurnChange();
-    if (gameState && gameState[0].length > 0) {
-      const moves = gameState[0];
+    if (Array.isArray(gameState) && gameState[0]) {
+      const moves = Array.isArray(gameState[0]) ? gameState[0] : [];
       chess.reset();
       moves.forEach((encodedMove: number) => {
         const from = decodeSquare(encodedMove >> 6);

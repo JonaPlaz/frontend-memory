@@ -47,17 +47,17 @@ export const useChessFactory = () => {
 export const useChessTemplate = () => {
   const { address } = useAccount();
 
-  const readChessTemplate = (functionName: string, args: any[], cloneAddress: `0x${string}`) => {
+  const readChessTemplate = <T>(functionName: string, args: any[], cloneAddress: `0x${string}`) => {
     const { data, isLoading, isError, refetch } = useReadContract({
       address: cloneAddress,
       abi: ChessTemplateABI,
       functionName,
       args,
-      account: address,
     });
-
-    return { data, isLoading, isError, refetch };
+  
+    return { data: data as T, isLoading, isError, refetch };
   };
+  
 
   const { writeContract } = useWriteContract();
 
