@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x9447c42e335350bF3fEFE1fc2C45c80D17E770F4";
+export const CONTRACT_ADDRESS = "0xBeC31F8207b002A84DCA6D06097a020264189590";
 export const CONTRACT_ABI = [
   {
     inputs: [],
@@ -225,18 +225,6 @@ export const CONTRACT_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "address",
-        name: "player1",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "player2",
-        type: "address",
-      },
-      {
         indexed: false,
         internalType: "uint256",
         name: "betAmount",
@@ -257,9 +245,9 @@ export const CONTRACT_ABI = [
       },
       {
         indexed: false,
-        internalType: "uint16",
-        name: "move",
-        type: "uint16",
+        internalType: "uint16[]",
+        name: "moves",
+        type: "uint16[]",
       },
     ],
     name: "MovePlayed",
@@ -282,6 +270,44 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousPlayer1",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newPlayer1",
+        type: "address",
+      },
+    ],
+    name: "Player1Set",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousPlayer2",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newPlayer2",
+        type: "address",
+      },
+    ],
+    name: "Player2Set",
     type: "event",
   },
   {
@@ -1066,16 +1092,6 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "_player1",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_player2",
-        type: "address",
-      },
       {
         internalType: "address",
         name: "_chessFactory",

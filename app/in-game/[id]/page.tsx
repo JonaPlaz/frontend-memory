@@ -123,8 +123,6 @@ export default function Game() {
         // Fin (mat ou autre)
         handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
       }
-      // Maj de "gameActive"
-      setGameActive(currentStatus === 1);
     }
   }, [gameState, sender]);
 
@@ -203,12 +201,17 @@ export default function Game() {
   useEffect(() => {
     handleTurnChange();
     if (Array.isArray(gameState) && gameState[0]) {
+      chess.reset(); // Réinitialise l'échiquier
       const moves = Array.isArray(gameState[0]) ? gameState[0] : [];
-      chess.reset();
       moves.forEach((encodedMove: number) => {
         const from = decodeSquare(encodedMove >> 6);
         const to = decodeSquare(encodedMove & 0x3f);
-        chess.move({ from, to });
+
+        // Vérifiez si le mouvement est valide avant de l'appliquer
+        const result = chess.move({ from, to });
+        if (!result) {
+          console.error(`Invalid move during reconstruction: ${from} -> ${to}`);
+        }
       });
       updateValidMoves();
     }

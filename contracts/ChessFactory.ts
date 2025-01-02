@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x5BfcACcdB46AfE4fADA538d6dF9BBFF69529Ad7D";
+export const CONTRACT_ADDRESS = "0x146395d3F5d3E3b6A169ECCFD7dC820355C39db7";
 export const CONTRACT_ABI = [
   {
     inputs: [
@@ -117,6 +117,17 @@ export const CONTRACT_ABI = [
   {
     inputs: [],
     name: "ReentrancyGuardReentrantCall",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "SafeERC20FailedOperation",
     type: "error",
   },
   {
@@ -359,6 +370,25 @@ export const CONTRACT_ABI = [
       },
     ],
     name: "RewardsDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "depositor",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "TokensDeposited",
     type: "event",
   },
   {

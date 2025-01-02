@@ -1,6 +1,5 @@
 export const encodeMove = (from: string, to: string) => {
   const encodedMove = (encodeSquare(from) << 6) | encodeSquare(to);
-  if (encodedMove > 0xffff) throw new Error(`Encoded move out of bounds: ${encodedMove}`);
   return encodedMove;
 };
 
