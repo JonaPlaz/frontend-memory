@@ -186,13 +186,13 @@ export default function Game() {
   };
 
   // Contrôle du tour => si c'est au localUser de jouer => showToast
-  // const handleTurnChange = () => {
-  //   const turn = chess.turn();
-  //   const isPlayerTurn =
-  //     (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
-  //     (turn === "b" && sender === gameDetails?.player2?.userAddress);
-  //   setShowToast(isPlayerTurn);
-  // };
+  const handleTurnChange = () => {
+    const turn = chess.turn();
+    const isPlayerTurn =
+      (turn === "w" && sender === gameDetails?.player1?.userAddress) ||
+      (turn === "b" && sender === gameDetails?.player2?.userAddress);
+    setShowToast(isPlayerTurn);
+  };
 
   // Au montage => update moves
   useEffect(() => {
@@ -201,6 +201,7 @@ export default function Game() {
 
   // À chaque update de gameState => reconstruit le board local
   useEffect(() => {
+    handleTurnChange();
     if (Array.isArray(gameState) && gameState[0]) {
       const moves = Array.isArray(gameState[0]) ? gameState[0] : [];
       chess.reset();
@@ -266,19 +267,19 @@ export default function Game() {
   const isPlayer1 = sender === gameDetails?.player1?.userAddress;
   const isPlayer2 = sender === gameDetails?.player2?.userAddress;
   const chessgroundConfig = {
-      fen: chess.fen(),
-      orientation: isPlayer1 ? "white" as const : "black" as const,
-      turnColor: chess.turn() === "w" ? "white" as const : "black" as const,
-      movable: {
-        color: isPlayer1 ? "white" as const : isPlayer2 ? "black" as const : undefined,
-        dests: validMoves,
-        showDests: true,
-        free: false,
-      },
-      events: {
-        move: handleMove,
-      },
-    };
+    fen: chess.fen(),
+    orientation: isPlayer1 ? ("white" as const) : ("black" as const),
+    turnColor: chess.turn() === "w" ? ("white" as const) : ("black" as const),
+    movable: {
+      color: isPlayer1 ? ("white" as const) : isPlayer2 ? ("black" as const) : undefined,
+      dests: validMoves,
+      showDests: true,
+      free: false,
+    },
+    events: {
+      move: handleMove,
+    },
+  };
 
   return (
     <>
