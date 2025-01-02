@@ -86,11 +86,17 @@ export default function Game() {
     () => {
       refetch();
       if (gameState) {
-        const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
-        if (currentStatus !== null && currentStatus === 3) {
+        const [
+          ,
+          ,
+          currentStatus,
+          winner = "0x0000000000000000000000000000000000000000",
+          loser = "0x0000000000000000000000000000000000000000",
+        ] = Array.isArray(gameState) ? gameState : [null, null, null, "", ""];
+        if (currentStatus !== null && Number(currentStatus) === 3) {
           handleEndGameModal(winner, loser, sender, "Abandon");
         }
-        setGameActive(currentStatus === 1);
+        setGameActive(Number(currentStatus) === 1);
       }
     },
     gameAddress as `0x${string}`
@@ -102,8 +108,14 @@ export default function Game() {
     () => {
       refetch();
       if (gameState) {
-        const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
-        if (currentStatus === 4) {
+        const [
+          ,
+          ,
+          currentStatus,
+          winner = "0x0000000000000000000000000000000000000000",
+          loser = "0x0000000000000000000000000000000000000000",
+        ] = Array.isArray(gameState) ? gameState : [null, null, null, "", ""];
+        if (Number(currentStatus) === 4) {
           handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
         }
       }
@@ -114,12 +126,17 @@ export default function Game() {
   // Au rechargement de la page, si la partie est déjà en 3 ou 4, on ouvre la modal
   useEffect(() => {
     if (gameState) {
-      const [currentStatus, winner, loser] = Array.isArray(gameState) ? gameState : [null, null, null];
-
-      if (currentStatus === 3) {
+      const [
+        ,
+        ,
+        currentStatus,
+        winner = "0x0000000000000000000000000000000000000000",
+        loser = "0x0000000000000000000000000000000000000000",
+      ] = Array.isArray(gameState) ? gameState : [null, null, null, "", ""];
+      if (Number(currentStatus) === 3) {
         // Abandon
         handleEndGameModal(winner, loser, sender, "Abandon");
-      } else if (currentStatus === 4) {
+      } else if (Number(currentStatus) === 4) {
         // Fin (mat ou autre)
         handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
       }
@@ -136,11 +153,16 @@ export default function Game() {
     if (localUser === winner) {
       // Gagnant
       setEndGameTitle("Félicitations, vous avez gagné ! 🏆");
-      setEndGameMessage(
-        `Type de fin: ${typeMessage}\n\n` +
-          `Vous recevez ${(Number(gameDetails.betAmount) * 2 * 0.75) / 1e18} CHESS\n\n` +
-          `Votre nouveau solde : ${newBalance.toFixed(2)} CHESS`
-      );
+      if (gameDetails && gameDetails.betAmount) {
+        setEndGameMessage(
+          `Type de fin: ${typeMessage}\n\n` +
+            `Vous recevez ${(Number(gameDetails.betAmount) * 2 * 0.75) / 1e18} CHESS\n\n` +
+            `Votre nouveau solde : ${newBalance.toFixed(2)} CHESS`
+        );
+      } else {
+        console.error("gameDetails or betAmount is undefined", { gameDetails });
+        setEndGameMessage("Impossible de calculer les gains. Veuillez réessayer plus tard.");
+      }
     } else if (localUser === loser) {
       // Perdant
       setEndGameTitle("Vous avez perdu !");
