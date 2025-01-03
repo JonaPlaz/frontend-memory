@@ -3,7 +3,7 @@ const RPC = process.env.NEXT_PUBLIC_HOLESKY_RPC || "";
 export const holesky = {
   id: 17000,
   name: "Holesky",
-  nativeCurrency: { name: "ChessToken", symbol: "CHESS", decimals: 18 },
+  nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
       http: [RPC],
