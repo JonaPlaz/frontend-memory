@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { useAccount } from "wagmi";
 import { useChessFactory } from "@/hooks/useContract";
@@ -18,7 +19,7 @@ export default function GameDetailsCard() {
 
   const handleRegisterToGame = async (gameAddress: string) => {
     try {
-      writeChessFactory("registerToGame", [gameAddress]);
+      await writeChessFactory("registerToGame", [gameAddress]);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
@@ -75,7 +76,16 @@ export default function GameDetailsCard() {
                 </div>
               </div>
             </div>
-            <div></div>
+            <div className="mt-4">
+              <Link
+                href={`https://holesky.etherscan.io/address/${game.gameAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                Voir sur Etherscan
+              </Link>
+            </div>
             <button
               className="btn btn-primary btn-wide mt-6"
               onClick={() =>
