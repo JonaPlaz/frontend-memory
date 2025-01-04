@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import { useChessFactory, useChessTemplate } from "@/hooks/useContract";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import { Chess, Square } from "chess.js";
 import Chessground from "@react-chess/chessground";
@@ -76,6 +77,7 @@ export default function Game() {
     "MovePlayed",
     () => {
       refetch();
+      handleTurnChange();
     },
     gameAddress as `0x${string}`
   );
@@ -123,7 +125,27 @@ export default function Game() {
     gameAddress as `0x${string}`
   );
 
-  // Au rechargement de la page, si la partie est déjà en 3 ou 4, on ouvre la modal
+  // Au rechargement de la page, on vérifie le showToast, et si la partie est déjà en 3 ou 4, on ouvre la modal
+  useEffect(() => {
+    handleTurnChange();
+    if (gameState) {
+      const [
+        ,
+        ,
+        currentStatus,
+        winner = "0x0000000000000000000000000000000000000000",
+        loser = "0x0000000000000000000000000000000000000000",
+      ] = Array.isArray(gameState) ? gameState : [null, null, null, "", ""];
+      if (Number(currentStatus) === 3) {
+        // Abandon
+        handleEndGameModal(winner, loser, sender, "Abandon");
+      } else if (Number(currentStatus) === 4) {
+        // Fin (mat ou autre)
+        handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
+      }
+    }
+  }, [gameState, sender, gameDetails]);
+
   useEffect(() => {
     if (gameState) {
       const [
@@ -141,7 +163,7 @@ export default function Game() {
         handleEndGameModal(winner, loser, sender, "Fin de partie (Mat)");
       }
     }
-  }, [gameState, sender]);
+  }, []);
 
   // handleEndGameModal => ouvre la modal en fonction du winner/loser
   function handleEndGameModal(winner: string, loser: string, localUser: string | undefined, typeMessage: string) {
@@ -160,7 +182,6 @@ export default function Game() {
             `Votre nouveau solde : ${newBalance.toFixed(2)} CHESS`
         );
       } else {
-        console.error("gameDetails or betAmount is undefined", { gameDetails });
         setEndGameMessage("Impossible de calculer les gains. Veuillez réessayer plus tard.");
       }
     } else if (localUser === loser) {
@@ -221,7 +242,6 @@ export default function Game() {
 
   // À chaque update de gameState => reconstruit le board local
   useEffect(() => {
-    handleTurnChange();
     if (Array.isArray(gameState) && gameState[0]) {
       chess.reset(); // Réinitialise l'échiquier
       const moves = Array.isArray(gameState[0]) ? gameState[0] : [];
@@ -355,12 +375,15 @@ export default function Game() {
       {/* Section principale */}
       <div className="flex items-center justify-center">
         <div className="flex flex-col space-y-8 mr-4">
-          <Image
-            src="/images/game_board/arrow_left_black.png"
-            alt="arrow left black to return home"
-            width={30}
-            height={30}
-          />
+          <Link href="/" aria-label="Retourner à la page d'accueil">
+            <Image
+              src="/images/game_board/arrow_left_black.png"
+              alt="arrow left black to return home"
+              width={30}
+              height={30}
+              style={{ cursor: "cursor-pointer" }}
+            />
+          </Link>
           <h2 className="text-[#38B6FF] font-bold">Partie en cours</h2>
           {isLoading ? (
             <p>Chargement des détails de la partie...</p>
