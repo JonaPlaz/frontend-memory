@@ -30,7 +30,7 @@ export default function Instructions() {
           <h2 className="mt-6 font-bold">1. Inscription et connexion</h2>
           <p className="text-left">
             Pour rejoindre Chess to Earn, connectez simplement votre wallet Web 3 préféré (Metamask, Coinbase, Rainbow,
-            etc.). Lors de votre inscription, nous vous offrons 3000 CHESS pour commencer vos premières parties.
+            etc.). Lors de votre inscription, nous vous offrons 1000 CHESS pour commencer vos premières parties.
           </p>
           <h2 className="mt-6 font-bold">3. Fonctionnement des parties</h2>
           <p className="text-left">
