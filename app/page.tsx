@@ -134,17 +134,19 @@ export default function Home() {
               <ConnectButton />
             </div>
             {/* Boutons pour ouvrir les modals */}
-            <div className="my-4 flex flex-row gap-4">
-              <button className="btn btn-primary" onClick={() => openModal("buy")}>
-                Acheter ChessTokens
-              </button>
-              <button className="btn btn-primary" onClick={() => openModal("withdraw")}>
-                Retirer ChessTokens
-              </button>
-              <button className="btn btn-primary" onClick={() => openModal("deposit")}>
-                Déposer ChessTokens
-              </button>
-            </div>
+            {isConnected && isRegistered && (
+              <div className="my-4 flex flex-row gap-4">
+                <button className="btn btn-primary" onClick={() => openModal("buy")}>
+                  Acheter ChessTokens
+                </button>
+                <button className="btn btn-primary" onClick={() => openModal("withdraw")}>
+                  Retirer ChessTokens
+                </button>
+                <button className="btn btn-primary" onClick={() => openModal("deposit")}>
+                  Déposer ChessTokens
+                </button>
+              </div>
+            )}
 
             {/* Modal */}
             {isModalOpen && (
