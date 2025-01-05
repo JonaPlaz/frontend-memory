@@ -11,8 +11,7 @@ import RegisterPopIn from "@/components/shared/Register/RegisterPopIn";
 import { User } from "@/interfaces/User";
 
 export default function Home() {
-  // 2- le user peut retirer ses propres fonds pour les mettre sur son wallet
-  // 4- qui paie les frais les réseau
+  // Fonctionnalités : Acheter, retirer et déposer des ChessTokens
 
   const { address: sender, isConnected } = useAccount();
   const { readChessFactory, writeChessFactory, watchChessFactoryEvent } = useChessFactory();
@@ -25,12 +24,17 @@ export default function Home() {
   const [isRegistered, setIsRegistered] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [ethToSpend, setEthToSpend] = useState("");
+  const [modalType, setModalType] = useState<"buy" | "withdraw" | "deposit">("buy");
+  const [amount, setAmount] = useState("");
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = (type: "buy" | "withdraw" | "deposit") => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
-    setEthToSpend(""); // Réinitialiser le champ à la fermeture
+    setAmount(""); // Réinitialiser le champ à la fermeture
   };
 
   watchChessFactoryEvent("UserRegistered", () => {
@@ -38,6 +42,14 @@ export default function Home() {
   });
 
   watchChessFactoryEvent("ChessTokensPurchased", () => {
+    refetch();
+  });
+
+  watchChessFactoryEvent("TokensWithdrawn", () => {
+    refetch();
+  });
+
+  watchChessFactoryEvent("TokensDeposited", () => {
     refetch();
   });
 
@@ -69,10 +81,24 @@ export default function Home() {
     writeChessFactory("buyChessTokens", [BigInt(amountInEth * 10 ** 18)], (amountInEth * 10 ** 18).toString());
   };
 
-  const handleBuyTokens = () => {
-    const amount = parseFloat(ethToSpend);
-    if (!isNaN(amount) && amount > 0) {
-      buyChessTokens(amount); // Appel à votre fonction d'achat
+  const withdrawChessTokens = (amount: number) => {
+    writeChessFactory("withdrawTokens", [BigInt(amount * 10 ** 18)]);
+  };
+
+  const depositChessTokens = (amount: number) => {
+    writeChessFactory("depositTokens", [BigInt(amount * 10 ** 18)]);
+  };
+
+  const handleAction = () => {
+    const parsedAmount = parseFloat(amount);
+    if (!isNaN(parsedAmount) && parsedAmount > 0) {
+      if (modalType === "buy") {
+        buyChessTokens(parsedAmount);
+      } else if (modalType === "withdraw") {
+        withdrawChessTokens(parsedAmount);
+      } else if (modalType === "deposit") {
+        depositChessTokens(parsedAmount);
+      }
       closeModal();
     } else {
       alert("Veuillez entrer un montant valide.");
@@ -107,28 +133,44 @@ export default function Home() {
             <div className="my-4">
               <ConnectButton />
             </div>
-            {/* Bouton pour ouvrir la modal */}
-            <button className="btn btn-primary" onClick={openModal}>
-              Acheter ChessTokens
-            </button>
+            {/* Boutons pour ouvrir les modals */}
+            <div className="my-4 flex flex-row gap-4">
+              <button className="btn btn-primary" onClick={() => openModal("buy")}>
+                Acheter ChessTokens
+              </button>
+              <button className="btn btn-primary" onClick={() => openModal("withdraw")}>
+                Retirer ChessTokens
+              </button>
+              <button className="btn btn-primary" onClick={() => openModal("deposit")}>
+                Déposer ChessTokens
+              </button>
+            </div>
 
             {/* Modal */}
             {isModalOpen && (
               <div className="modal modal-open">
                 <div className="modal-box">
-                  <h3 className="font-bold text-lg">Acheter des ChessTokens</h3>
+                  <h3 className="font-bold text-lg">
+                    {modalType === "buy"
+                      ? "Acheter des ChessTokens"
+                      : modalType === "withdraw"
+                      ? "Retirer des ChessTokens"
+                      : "Déposer des ChessTokens"}
+                  </h3>
                   <p className="py-4">
-                    Entrez le montant d&apos;ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)
+                    {modalType === "buy"
+                      ? "Entrez le montant d'ETH que vous souhaitez dépenser. (1000 Chess = 0.001 ETH)"
+                      : "Entrez le montant de ChessTokens."}
                   </p>
                   <input
                     type="text"
-                    placeholder="Montant en ETH"
+                    placeholder="Montant"
                     className="input input-bordered w-full"
-                    value={ethToSpend}
-                    onChange={(e) => setEthToSpend(e.target.value)}
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
                   />
                   <div className="modal-action">
-                    <button className="btn btn-primary" onClick={handleBuyTokens}>
+                    <button className="btn btn-primary" onClick={handleAction}>
                       Valider
                     </button>
                     <button className="btn" onClick={closeModal}>
