@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x146395d3F5d3E3b6A169ECCFD7dC820355C39db7";
+export const CONTRACT_ADDRESS = "0x8EeB237f8b9a487665f85aFB1d11c6e60d911e91";
 export const CONTRACT_ABI = [
   {
     inputs: [
@@ -38,6 +38,11 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
+    name: "InactiveGame",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "InsufficientAllowance",
     type: "error",
   },
@@ -59,7 +64,7 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
-    name: "InsufficientBalance",
+    name: "InsufficientChessBalance",
     type: "error",
   },
   {
@@ -79,7 +84,17 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
+    name: "InvalidChessAmount",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "InvalidChessTokenAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidEthAmount",
     type: "error",
   },
   {
@@ -1032,14 +1047,15 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "withdrawEther",
+    inputs: [],
+    name: "withdrawAllChessTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdrawAllEther",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
