@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0xe4C80c97d0a2C547feCEE0a0d20242D1375f9dF5";
+export const CONTRACT_ADDRESS = "0x0987009D3E7d35Bd9CAdB2BCC840BE3021054f2E";
 export const CONTRACT_ABI = [
   {
     inputs: [
@@ -892,6 +892,19 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "ownerDepositTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
